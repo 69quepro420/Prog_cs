@@ -13,6 +13,9 @@ class Terminale : Oggetto
     public string password;
     public List<string> logs;
 
+    // Lista di nomi delle porte che questo terminale può controllare
+    public List<string> porteControllate { get; set; } = new List<string>();
+
     public string asciiArt = @"
     d8'                    MP""""""`MM                                        MMP""""""YMM MP""""""`MM
     d8'                     M  mmmmm..M                                        M' .mmm. `M M  mmmmm..M
@@ -23,7 +26,8 @@ class Terminale : Oggetto
     oooooooooooo       MMMMMMMMMMM 88                                     MMMMMMMMMMM MMMMMMMMMMM
     dP                                                                 ";
 
-    public Terminale(string nome, string descr, StatoTerminale stato, string password)
+    // Nuovo costruttore che può ricevere la lista delle porte controllate
+    public Terminale(string nome, string descr, StatoTerminale stato, string password, List<string>? porteControllate = null)
     {
         this.nome = nome;
         this.descr = descr;
@@ -32,6 +36,7 @@ class Terminale : Oggetto
         this.stato = stato;
         this.password = password;
         this.logs = new List<string>();
+        if (porteControllate != null) this.porteControllate = porteControllate;
     }
 
     public override void Usa(Giocatore player)
@@ -160,7 +165,7 @@ class Terminale : Oggetto
         }
     }
 
-    private void SistemaOperativo(Giocatore player)
+    private void SistemaOperativo(Giocatore(player))
     {
         while(true)
         {
@@ -183,11 +188,99 @@ class Terminale : Oggetto
             }
             else if (tasto == ConsoleKey.D2 || tasto == ConsoleKey.NumPad2)
             {
+                // Rete Locale: mostra solo le porte e le casse controllabili da questo terminale
                 Console.Clear();
                 Console.WriteLine("--- RETE LOCALE ---\n");
-                Console.WriteLine("Override di sicurezza non ancora configurato.");
-                Console.WriteLine("\nPremi un tasto per tornare indietro...");
-                Console.ReadKey(true);
+
+                if (player.stanza == null)
+                {
+                    Console.WriteLine("Nessuna stanza associata al giocatore.");
+                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
+                    Console.ReadKey(true);
+                    continue;
+                }
+
+                List<string> menuVoci = new List<string>();
+                List<object> riferimenti = new List<object>();
+
+                void TryAddPort(Porta? p)
+                {
+                    if (p != null && porteControllate.Contains(p.nome))
+                    {
+                        menuVoci.Add("[Porta] " + p.nome);
+                        riferimenti.Add(p);
+                    }
+                }
+
+                TryAddPort(player.stanza.portaNord);
+                TryAddPort(player.stanza.portaSud);
+                TryAddPort(player.stanza.portaEst);
+                TryAddPort(player.stanza.portaOvest);
+
+                // Aggiungiamo le casse presenti nella stanza
+                foreach (var o in player.stanza.lista)
+                {
+                    if (o is Cassa c)
+                    {
+                        menuVoci.Add("[Cassa] " + c.nome);
+                        riferimenti.Add(c);
+                    }
+                }
+
+                if (menuVoci.Count == 0)
+                {
+                    Console.WriteLine("Nessun dispositivo rilevabile nella rete locale controllabile da questo terminale.");
+                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
+                    Console.ReadKey(true);
+                    continue;
+                }
+
+                for (int i = 0; i < menuVoci.Count; i++) Console.WriteLine($"{i+1}. {menuVoci[i]}");
+                Console.WriteLine("\nSeleziona un dispositivo (0 per uscire): ");
+                string? sel = Console.ReadLine();
+                if (!int.TryParse(sel, out int idx) || idx < 0 || idx > menuVoci.Count) continue;
+                if (idx == 0) continue;
+
+                object target = riferimenti[idx - 1];
+
+                if (target is Porta porta)
+                {
+                    Console.WriteLine($"\nDispositivo selezionato: Porta '{porta.nome}'. Stato attuale: {porta.stato}");
+                    Console.WriteLine("1. Apri porta");
+                    Console.WriteLine("2. Torna indietro");
+                    Console.Write("> ");
+                    string? a = Console.ReadLine();
+                    if (a == "1")
+                    {
+                        porta.CambiaStato(Porta.StatoPorta.Aperta);
+                        Console.WriteLine($"\nLa porta '{porta.nome}' è stata aperta dal terminale.");
+                    }
+                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
+                    Console.ReadKey(true);
+                    continue;
+                }
+
+                if (target is Cassa cassa)
+                {
+                    Console.WriteLine($"\nDispositivo selezionato: {cassa.nome}. Stato attuale: {cassa.stato}");
+                    Console.WriteLine("1. Sblocca");
+                    Console.WriteLine("2. Apri");
+                    Console.WriteLine("3. Torna indietro");
+                    Console.Write("> ");
+                    string? a = Console.ReadLine();
+                    if (a == "1")
+                    {
+                        if (cassa.Sblocca()) Console.WriteLine($"\n{cassa.nome} è stata sbloccata.");
+                        else Console.WriteLine($"\n{cassa.nome} non può essere sbloccata o è già sbloccata.");
+                    }
+                    else if (a == "2")
+                    {
+                        cassa.Usa(player);
+                    }
+                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
+                    Console.ReadKey(true);
+                    continue;
+                }
             }
             else if (tasto == ConsoleKey.D3 || tasto == ConsoleKey.NumPad3)
             {
