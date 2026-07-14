@@ -13,8 +13,9 @@ class Terminale : Oggetto
     public string password;
     public List<string> logs;
 
-    // Lista di nomi delle porte che questo terminale può controllare
-    public List<string> porteControllate { get; set; } = new List<string>();
+    // Liste di dispositivi che questo terminale può controllare (impostate dallo sviluppatore)
+    public List<Porta> porteControllate = new List<Porta>();
+    public List<Cassa> casseControllate = new List<Cassa>();
 
     public string asciiArt = @"
     d8'                    MP""""""`MM                                        MMP""""""YMM MP""""""`MM
@@ -26,8 +27,7 @@ class Terminale : Oggetto
     oooooooooooo       MMMMMMMMMMM 88                                     MMMMMMMMMMM MMMMMMMMMMM
     dP                                                                 ";
 
-    // Nuovo costruttore che può ricevere la lista delle porte controllate
-    public Terminale(string nome, string descr, StatoTerminale stato, string password, List<string>? porteControllate = null)
+    public Terminale(string nome, string descr, StatoTerminale stato, string password)
     {
         this.nome = nome;
         this.descr = descr;
@@ -36,7 +36,6 @@ class Terminale : Oggetto
         this.stato = stato;
         this.password = password;
         this.logs = new List<string>();
-        if (porteControllate != null) this.porteControllate = porteControllate;
     }
 
     public override void Usa(Giocatore player)
@@ -165,7 +164,7 @@ class Terminale : Oggetto
         }
     }
 
-    private void SistemaOperativo(Giocatore(player))
+    private void SistemaOperativo(Giocatore player)
     {
         while(true)
         {
@@ -188,98 +187,84 @@ class Terminale : Oggetto
             }
             else if (tasto == ConsoleKey.D2 || tasto == ConsoleKey.NumPad2)
             {
-                // Rete Locale: mostra solo le porte e le casse controllabili da questo terminale
-                Console.Clear();
-                Console.WriteLine("--- RETE LOCALE ---\n");
-
-                if (player.stanza == null)
+                // Rete Locale come "chiave" per dispositivi pre-selezionati dallo sviluppatore
+                while (true)
                 {
-                    Console.WriteLine("Nessuna stanza associata al giocatore.");
-                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
-                    Console.ReadKey(true);
-                    continue;
-                }
+                    Console.Clear();
+                    Console.WriteLine("--- RETE LOCALE ---\n");
 
-                List<string> menuVoci = new List<string>();
-                List<object> riferimenti = new List<object>();
-
-                void TryAddPort(Porta? p)
-                {
-                    if (p != null && porteControllate.Contains(p.nome))
+                    int totaleDispositivi = porteControllate.Count + casseControllate.Count;
+                    if (totaleDispositivi == 0)
                     {
-                        menuVoci.Add("[Porta] " + p.nome);
-                        riferimenti.Add(p);
+                        Console.WriteLine("Nessun dispositivo controllato da questo terminale.");
+                        Console.WriteLine("\nPremi un tasto per tornare indietro...");
+                        Console.ReadKey(true);
+                        break;
                     }
-                }
 
-                TryAddPort(player.stanza.portaNord);
-                TryAddPort(player.stanza.portaSud);
-                TryAddPort(player.stanza.portaEst);
-                TryAddPort(player.stanza.portaOvest);
+                    Dictionary<int, (string tipo, object riferimento)> mappa = new Dictionary<int, (string, object)>();
+                    int idx = 1;
 
-                // Aggiungiamo le casse presenti nella stanza
-                foreach (var o in player.stanza.lista)
-                {
-                    if (o is Cassa c)
+                    Console.WriteLine("Dispositivi controllati:");
+                    foreach (var p in porteControllate)
                     {
-                        menuVoci.Add("[Cassa] " + c.nome);
-                        riferimenti.Add(c);
+                        Console.WriteLine($"{idx}. [PORTA] {p.nome} - Stato: {p.stato}");
+                        mappa[idx] = ("porta", p);
+                        idx++;
                     }
-                }
-
-                if (menuVoci.Count == 0)
-                {
-                    Console.WriteLine("Nessun dispositivo rilevabile nella rete locale controllabile da questo terminale.");
-                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                for (int i = 0; i < menuVoci.Count; i++) Console.WriteLine($"{i+1}. {menuVoci[i]}");
-                Console.WriteLine("\nSeleziona un dispositivo (0 per uscire): ");
-                string? sel = Console.ReadLine();
-                if (!int.TryParse(sel, out int idx) || idx < 0 || idx > menuVoci.Count) continue;
-                if (idx == 0) continue;
-
-                object target = riferimenti[idx - 1];
-
-                if (target is Porta porta)
-                {
-                    Console.WriteLine($"\nDispositivo selezionato: Porta '{porta.nome}'. Stato attuale: {porta.stato}");
-                    Console.WriteLine("1. Apri porta");
-                    Console.WriteLine("2. Torna indietro");
-                    Console.Write("> ");
-                    string? a = Console.ReadLine();
-                    if (a == "1")
+                    foreach (var c in casseControllate)
                     {
-                        porta.CambiaStato(Porta.StatoPorta.Aperta);
-                        Console.WriteLine($"\nLa porta '{porta.nome}' è stata aperta dal terminale.");
+                        Console.WriteLine($"{idx}. [CASSA] {c.nome} - Stato: {c.stato}");
+                        mappa[idx] = ("cassa", c);
+                        idx++;
                     }
-                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
-                    Console.ReadKey(true);
-                    continue;
-                }
 
-                if (target is Cassa cassa)
-                {
-                    Console.WriteLine($"\nDispositivo selezionato: {cassa.nome}. Stato attuale: {cassa.stato}");
-                    Console.WriteLine("1. Sblocca");
-                    Console.WriteLine("2. Apri");
-                    Console.WriteLine("3. Torna indietro");
-                    Console.Write("> ");
-                    string? a = Console.ReadLine();
-                    if (a == "1")
+                    Console.WriteLine("\nSeleziona il numero del dispositivo da gestire (0 per uscire): ");
+                    string? input = Console.ReadLine();
+                    if (!int.TryParse(input, out int sel)) continue;
+                    if (sel == 0) break;
+                    if (!mappa.ContainsKey(sel)) continue;
+
+                    var entry = mappa[sel];
+                    if (entry.tipo == "porta")
                     {
-                        if (cassa.Sblocca()) Console.WriteLine($"\n{cassa.nome} è stata sbloccata.");
-                        else Console.WriteLine($"\n{cassa.nome} non può essere sbloccata o è già sbloccata.");
+                        var p = (Porta)entry.riferimento;
+                        if (p.stato == Porta.StatoPorta.Aperta)
+                        {
+                            Console.WriteLine($"\nLa porta '{p.nome}' è già aperta.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"\nVuoi aprire la porta '{p.nome}'? (S/N)");
+                            var k = Console.ReadKey(true).Key;
+                            if (k == ConsoleKey.S) { p.CambiaStato(Porta.StatoPorta.Aperta); Console.WriteLine($"Porta '{p.nome}' aperta."); }
+                            else Console.WriteLine("Operazione annullata.");
+                        }
+                        Console.WriteLine("\nPremi un tasto per tornare alla rete locale..."); Console.ReadKey(true);
                     }
-                    else if (a == "2")
+                    else // cassa
                     {
-                        cassa.Usa(player);
+                        var c = (Cassa)entry.riferimento;
+                        if (c.stato == Cassa.StatoCassa.Bloccata)
+                        {
+                            Console.WriteLine($"\nLa cassa '{c.nome}' è bloccata. Vuoi sbloccarla via terminale? (S/N)");
+                            var k = Console.ReadKey(true).Key;
+                            if (k == ConsoleKey.S) { c.Sblocca(); Console.WriteLine($"Cassa '{c.nome}' sbloccata."); }
+                            else Console.WriteLine("Operazione annullata.");
+                        }
+                        else if (c.stato == Cassa.StatoCassa.Sbloccata)
+                        {
+                            Console.WriteLine($"\nVuoi aprire la cassa '{c.nome}'? (S/N)");
+                            var k = Console.ReadKey(true).Key;
+                            if (k == ConsoleKey.S) { c.Usa(player); }
+                            else Console.WriteLine("Operazione annullata.");
+                        }
+                        else // Saccheggiata
+                        {
+                            Console.WriteLine($"\nLa cassa '{c.nome}' è già stata saccheggiata.");
+                        }
+                        Console.WriteLine("\nPremi un tasto per tornare alla rete locale..."); Console.ReadKey(true);
                     }
-                    Console.WriteLine("\nPremi un tasto per tornare indietro...");
-                    Console.ReadKey(true);
-                    continue;
                 }
             }
             else if (tasto == ConsoleKey.D3 || tasto == ConsoleKey.NumPad3)
