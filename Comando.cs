@@ -170,9 +170,9 @@ class Comando
         }
         else if (sceltaAzione == 2)
         {
-            // Lasciamo l'oggetto nella stanza corrente
+            Console.WriteLine($"\nHai SCARTATO {oggettoTarget.nome} (gettato sul pavimento).");
+            // Aggiungiamo l'oggetto nella stanza corrente
             player.stanza!.lista.Add(oggettoTarget);
-            Console.WriteLine($"\nHai SCARTATO {oggettoTarget.nome} (gettato nella stanza).");
         }
 
         // 3. Reinseriamo l'oggetto Target nell'inventario (se non è stato scartato/consumato)
