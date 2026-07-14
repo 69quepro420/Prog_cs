@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Project;
 
@@ -31,67 +32,59 @@ class Oggetto
 }
 
 /// <summary>
-/// Classe Cassa: oggetto interattivo con 3 stati (Bloccata, Sbloccata, Saccheggiata)
-/// Contiene un singolo Oggetto che, quando la cassa viene aperta (stato Sbloccata), viene lasciato nella stanza.
-/// I messaggi di interazione usano direttamente la proprietà `nome` per essere personalizzabili.
+/// Cassa: contenitore che può essere bloccato, sbloccato o saccheggiato.
+/// Quando viene aperta in stato Sbloccata rilascia il contenuto nella stanza.
 /// </summary>
 class Cassa : Oggetto
 {
     public enum StatoCassa { Bloccata, Sbloccata, Saccheggiata }
-
-    public StatoCassa stato { get; private set; }
-    public Oggetto? contenuto { get; private set; }
+    public StatoCassa stato { get; set; }
+    public Oggetto? contenuto { get; set; }
 
     public Cassa() { }
 
-    public Cassa(string nome, Oggetto? contenuto, StatoCassa stato = StatoCassa.Bloccata)
+    public Cassa(string nome, string descr, Oggetto? contenuto, StatoCassa stato = StatoCassa.Bloccata)
     {
         this.nome = nome;
-        this.descr = "Una cassa metallica.";
-        this.mobile = false;
-        this.peso = 0f;
+        this.descr = descr;
+        this.peso = 5f; // valore di default
+        this.mobile = false; // la cassa è fissa
         this.contenuto = contenuto;
         this.stato = stato;
     }
 
     /// <summary>
-    /// Interazione principale con la cassa (apri)
+    /// Interazione diretta con la cassa.
+    /// - Bloccata: mostra messaggio.
+    /// - Sbloccata: rilascia il contenuto nella stanza e diventa Saccheggiata.
+    /// - Saccheggiata: informa che è già stata svuotata.
     /// </summary>
     public override void Usa(Giocatore player)
     {
-        // Assicuriamoci che la stanza del giocatore sia definita
-        if (player.stanza == null)
+        Console.Clear();
+        if (stato == StatoCassa.Bloccata)
         {
-            Console.WriteLine("Errore: giocatore non in una stanza.");
-            return;
+            Console.WriteLine($"{nome} è bloccata da un sistema elettronico. Non puoi aprirla manualmente.");
         }
-
-        switch (stato)
+        else if (stato == StatoCassa.Sbloccata)
         {
-            case StatoCassa.Bloccata:
-                Console.WriteLine($"{nome} è bloccata da un sistema elettronico.");
-                break;
-
-            case StatoCassa.Sbloccata:
-                if (contenuto != null)
-                {
-                    // Mettiamo l'oggetto contenuto nella stanza
-                    player.stanza.lista.Add(contenuto);
-                    var trovato = contenuto;
-                    contenuto = null;
-                    stato = StatoCassa.Saccheggiata;
-                    Console.WriteLine($"Hai aperto {nome} e trovato: {trovato.nome}. L'oggetto è stato lasciato nella stanza.");
-                }
-                else
-                {
-                    stato = StatoCassa.Saccheggiata;
-                    Console.WriteLine($"{nome} sembra vuoto.");
-                }
-                break;
-
-            case StatoCassa.Saccheggiata:
-                Console.WriteLine($"{nome} è saccheggiata.");
-                break;
+            if (contenuto != null)
+            {
+                Console.WriteLine($"Apri {nome}. Trovi {contenuto.nome} all'interno. (Viene posizionato nella stanza)");
+                // Aggiungiamo il contenuto alla stanza corrente
+                player.stanza!.lista.Add(contenuto);
+                // svuotiamo la cassa
+                contenuto = null;
+            }
+            else
+            {
+                Console.WriteLine($"Apri {nome}. Non c'è niente all'interno.");
+            }
+            stato = StatoCassa.Saccheggiata;
+        }
+        else // Saccheggiata
+        {
+            Console.WriteLine($"{nome} è già stata saccheggiata.");
         }
 
         Console.WriteLine("\nPremi un tasto per continuare...");
@@ -99,15 +92,11 @@ class Cassa : Oggetto
     }
 
     /// <summary>
-    /// Sblocca la cassa (semplice comportamento: sblocca solo se era bloccata)
+    /// Metodo per sbloccare la cassa (utilizzabile dal Terminale o da chiavi).
     /// </summary>
-    public bool Sblocca()
+    public void Sblocca()
     {
         if (stato == StatoCassa.Bloccata)
-        {
             stato = StatoCassa.Sbloccata;
-            return true;
-        }
-        return false;
     }
 }
