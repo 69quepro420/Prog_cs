@@ -33,6 +33,7 @@ class Oggetto
 /// <summary>
 /// Classe Cassa: oggetto interattivo con 3 stati (Bloccata, Sbloccata, Saccheggiata)
 /// Contiene un singolo Oggetto che, quando la cassa viene aperta (stato Sbloccata), viene lasciato nella stanza.
+/// I messaggi di interazione usano direttamente la proprietà `nome` per essere personalizzabili.
 /// </summary>
 class Cassa : Oggetto
 {
@@ -46,7 +47,7 @@ class Cassa : Oggetto
     public Cassa(string nome, Oggetto? contenuto, StatoCassa stato = StatoCassa.Bloccata)
     {
         this.nome = nome;
-        this.descr = "Una cassa metallica.":
+        this.descr = "Una cassa metallica.";
         this.mobile = false;
         this.peso = 0f;
         this.contenuto = contenuto;
@@ -68,25 +69,28 @@ class Cassa : Oggetto
         switch (stato)
         {
             case StatoCassa.Bloccata:
-                Console.WriteLine($"La cassa '{nome}' è bloccata da un sistema elettronico.");
+                Console.WriteLine($"{nome} è bloccata da un sistema elettronico.");
                 break;
+
             case StatoCassa.Sbloccata:
                 if (contenuto != null)
                 {
+                    // Mettiamo l'oggetto contenuto nella stanza
                     player.stanza.lista.Add(contenuto);
                     var trovato = contenuto;
                     contenuto = null;
                     stato = StatoCassa.Saccheggiata;
-                    Console.WriteLine($"Hai aperto la cassa '{nome}' e trovato: {trovato.nome}. È stato lasciato nella stanza.");
+                    Console.WriteLine($"Hai aperto {nome} e trovato: {trovato.nome}. L'oggetto è stato lasciato nella stanza.");
                 }
                 else
                 {
                     stato = StatoCassa.Saccheggiata;
-                    Console.WriteLine($"La cassa '{nome}' sembra vuota.");
+                    Console.WriteLine($"{nome} sembra vuoto.");
                 }
                 break;
+
             case StatoCassa.Saccheggiata:
-                Console.WriteLine($"La cassa '{nome}' è già saccheggiata.");
+                Console.WriteLine($"{nome} è saccheggiata.");
                 break;
         }
 
@@ -95,7 +99,7 @@ class Cassa : Oggetto
     }
 
     /// <summary>
-    /// Sblocca la cassa (semplice comportamento: sblocca sempre)
+    /// Sblocca la cassa (semplice comportamento: sblocca solo se era bloccata)
     /// </summary>
     public bool Sblocca()
     {
