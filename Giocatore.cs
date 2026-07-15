@@ -6,12 +6,23 @@ namespace Project;
 
 class Giocatore
 {
+    // Peso massimo trasportabile: il Martello di Emergenza pesa esattamente questo valore
+    public const float pesoMassimo = 10f;
+
     public string nome { get; set; }
     public int[] coordinate;
     public Stanza? stanza;
     public Stack<Oggetto> inventario { get; set; }
     public int vita = 100;
     public int contatorePassi = 0;
+
+    /// <summary>
+    /// Peso totale degli oggetti attualmente nell'inventario.
+    /// </summary>
+    public float PesoInventario()
+    {
+        return inventario.Sum(o => o.peso);
+    }
 
     /// <summary>
     /// Sfrutta il polimorfismo chiamando il metodo Usa dell'oggetto specifico.
@@ -63,6 +74,7 @@ class Giocatore
         }
 
         Console.WriteLine("+-------------------------------------------+---------------+");
+        Console.WriteLine($"  Peso trasportato: {PesoInventario():0.#}/{pesoMassimo:0.#} kg | Componenti navetta: {Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali}");
         Console.WriteLine($"\nSei in: {stanza!.nome}");
         Console.WriteLine($"{stanza.descr}\n");
     }

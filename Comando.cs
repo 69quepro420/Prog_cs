@@ -46,7 +46,34 @@ class Comando
                     if (MenuPausa(player)) return; // torna al menu principale
                     break;
             }
+
+            // Controllo vittoria: tutti i componenti della navetta installati
+            if (Global.partitaVinta)
+            {
+                SchermataVittoria(player);
+                return;
+            }
         }
+    }
+
+    /// <summary>
+    /// Schermata finale mostrata quando la navetta è stata riparata.
+    /// </summary>
+    private static void SchermataVittoria(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("              LA NAVETTA E' STATA RIPARATA!                ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine();
+        Console.WriteLine($" I motori si riaccendono con un rombo possente.");
+        Console.WriteLine($" Complimenti, {player.nome}: hai lasciato la stazione!");
+        Console.WriteLine();
+        Console.WriteLine($" Passi compiuti: {player.contatorePassi}");
+        Console.WriteLine();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
+        Console.ReadKey(true);
     }
 
     /// <summary>
@@ -115,6 +142,10 @@ class Comando
         {
             // USA - Chiama il metodo polimorfo Usa() dell'oggetto
             oggettoSelezionato.Usa(player);
+
+            // Un componente installato nella navetta sparisce dalla stanza
+            if (oggettoSelezionato is OggettoChiave chiave && chiave.installato)
+                player.stanza.lista.Remove(oggettoSelezionato);
         }
         else if (sceltaAzione == 1)
         {
@@ -133,9 +164,13 @@ class Comando
             {
                 Console.WriteLine($"\n{oggettoSelezionato.nome} è troppo grande o fisso per essere preso.");
             }
+            else if (player.PesoInventario() + oggettoSelezionato.peso > Giocatore.pesoMassimo)
+            {
+                Console.WriteLine($"\n{oggettoSelezionato.nome} pesa {oggettoSelezionato.peso:0.#} kg: troppo!");
+                Console.WriteLine($"Stai trasportando {player.PesoInventario():0.#}/{Giocatore.pesoMassimo:0.#} kg. Scarta qualcosa prima.");
+            }
             else
             {
-                // Aggiungiamo all'inventario (per ora senza controllo peso)
                 player.inventario.Push(oggettoSelezionato);
                 player.stanza.lista.RemoveAt(scelta);
                 Console.WriteLine($"\nHai preso {oggettoSelezionato.nome} e lo hai messo nell'inventario!");
@@ -160,7 +195,7 @@ class Comando
 
         // Convertiamo la pila in array solo per visualizzare il menù (senza alterare la struttura)
         string[] nomiOggetti = player.inventario.Select(o => o.nome).ToArray();
-        Menu menuInv = new Menu(nomiOggetti, "INVENTARIO - Seleziona un oggetto (ESC per uscire)");
+        Menu menuInv = new Menu(nomiOggetti, $"INVENTARIO ({player.PesoInventario():0.#}/{Giocatore.pesoMassimo:0.#} kg) - Seleziona un oggetto (ESC per uscire)");
 
         int sceltOggetto = menuInv.Selezione();
 
@@ -205,8 +240,10 @@ class Comando
             player.stanza!.lista.Add(oggettoTarget);
         }
 
-        // 3. Reinseriamo l'oggetto Target nell'inventario (se non è stato scartato/consumato)
-        if (sceltaAzione != 2) player.inventario.Push(oggettoTarget);
+        // 3. Reinseriamo l'oggetto Target nell'inventario
+        //    (a meno che non sia stato scartato o installato nella navetta)
+        bool consumato = oggettoTarget is OggettoChiave chiave && chiave.installato;
+        if (sceltaAzione != 2 && !consumato) player.inventario.Push(oggettoTarget);
 
         // 4. Reinseriamo gli oggetti temporanei mantenendo l'ordine originario
         Console.WriteLine("\nReinserimento oggetti nella Pila...");

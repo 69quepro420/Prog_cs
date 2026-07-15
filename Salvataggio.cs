@@ -17,6 +17,7 @@ class DatiSalvataggio
     public string nome { get; set; } = "Comandante";
     public int vita { get; set; } = 100;
     public int contatorePassi { get; set; }
+    public int componentiNavetta { get; set; }
     public int[] coordinate { get; set; } = new[] { 5, 2 };
 
     // Nomi degli oggetti nell'inventario, dal fondo alla cima della pila
@@ -51,6 +52,7 @@ static class Salvataggio
                 nome = player.nome,
                 vita = player.vita,
                 contatorePassi = player.contatorePassi,
+                componentiNavetta = Global.componentiNavettaInstallati,
                 coordinate = new[] { player.coordinate[0], player.coordinate[1] },
                 // Stack enumera dalla cima al fondo: invertiamo per salvare dal fondo
                 inventario = player.inventario.Select(o => o.nome).Reverse().ToList()
@@ -193,10 +195,11 @@ static class Salvataggio
             if (oggettiMobili.TryGetValue(nomeObj, out Oggetto? obj)) player.inventario.Push(obj);
         }
 
-        // 5. Stato del giocatore
+        // 5. Stato del giocatore e della navetta
         player.nome = dati.nome;
         player.vita = dati.vita;
         player.contatorePassi = dati.contatorePassi;
+        Global.componentiNavettaInstallati = dati.componentiNavetta;
 
         int r = dati.coordinate[0], c = dati.coordinate[1];
         if (r >= 0 && r < Global.map.Length && c >= 0 && c < Global.map[r].Length && Global.map[r][c] != null)
