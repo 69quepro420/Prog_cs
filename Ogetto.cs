@@ -10,6 +10,12 @@ class Oggetto
     public float peso { get; set; }
     public bool mobile { get; set; }
 
+    /// <summary>
+    /// Indica se l'oggetto va rimosso dall'inventario/stanza dopo essere stato
+    /// usato (oggetti "consumabili"). Le sottoclassi lo sovrascrivono.
+    /// </summary>
+    public virtual bool Consumato => false;
+
     // --- 1. COSTRUTTORE VUOTO (Risolve l'errore del Terminale CS7036) ---
     public Oggetto() { }
 
@@ -220,6 +226,8 @@ class OggettoChiave : Oggetto
 {
     public bool installato = false;
 
+    public override bool Consumato => installato;
+
     public OggettoChiave(string nome, string descr, float peso)
     {
         this.nome = nome;
@@ -249,5 +257,61 @@ class OggettoChiave : Oggetto
         {
             Console.WriteLine("La navetta ha ancora bisogno di altri componenti...");
         }
+    }
+}
+
+/// <summary>
+/// Antidolorifici: se somministrati al ferito nella stanza giusta, gli
+/// alleviano il dolore quel tanto che basta per rivelare la password del
+/// terminale collegato. Subito dopo il ferito muore. L'oggetto si consuma.
+/// </summary>
+class Antidolorifici : Oggetto
+{
+    public Personaggio? ferito;    // il personaggio a cui vanno somministrati
+    public Terminale? terminale;   // terminale di cui rivela la password
+    public string stanzaUso = "";  // stanza in cui il ferito si trova
+    public bool usato = false;
+
+    public override bool Consumato => usato;
+
+    public Antidolorifici(Personaggio? ferito = null, Terminale? terminale = null, string stanzaUso = "")
+    {
+        this.nome = "Antidolorifici";
+        this.descr = "Una confezione di potenti antidolorifici. Forse aiuterebbero un ferito.";
+        this.peso = 0.3f;
+        this.mobile = true;
+        this.ferito = ferito;
+        this.terminale = terminale;
+        this.stanzaUso = stanzaUso;
+    }
+
+    public override void Usa(Giocatore player)
+    {
+        if (usato)
+        {
+            Console.WriteLine("\nHai già usato gli antidolorifici.");
+            return;
+        }
+
+        if (ferito == null || !ferito.vivo || player.stanza!.nome != stanzaUso)
+        {
+            Console.WriteLine("\nQui non c'è nessun ferito a cui somministrarli.");
+            return;
+        }
+
+        Console.Clear();
+        Console.WriteLine($"Somministri gli antidolorifici a {ferito.nome}.\n");
+        Console.WriteLine("\"Aaah... finalmente... il dolore si placa...\"");
+        Console.WriteLine();
+        if (terminale != null)
+            Console.WriteLine($"\"Ascolta... il terminale del corridoio centrale... la password è {terminale.password}...\" (PLACEHOLDER)");
+        Console.WriteLine();
+        Console.WriteLine($"{ferito.nome} chiude gli occhi lentamente. Non respira più.");
+
+        ferito.vivo = false;
+        usato = true;
+
+        Console.WriteLine("\nPremi un tasto per continuare...");
+        Console.ReadKey(true);
     }
 }

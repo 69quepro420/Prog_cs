@@ -97,12 +97,27 @@ class Comando
     }
 
     /// <summary>
-    /// Tasto [T]: parla con l'IA Tascabile, se è nell'inventario.
+    /// Tasto [T]: parla con il personaggio presente nella stanza e/o con
+    /// l'IA Tascabile, se è nell'inventario. Se entrambi sono disponibili,
+    /// il giocatore sceglie con chi parlare.
     /// </summary>
     private static void Parla(Giocatore player)
     {
+        Personaggio? npc = player.stanza!.personaggio;
         IATascabile? ia = player.inventario.OfType<IATascabile>().FirstOrDefault();
-        if (ia != null)
+
+        if (npc != null && ia != null)
+        {
+            Menu menu = new Menu(new[] { npc.nome, "IA Tascabile" }, "Con chi vuoi parlare? (ESC per annullare)");
+            int scelta = menu.Selezione();
+            if (scelta == 0) npc.Parla();
+            else if (scelta == 1) ia.Parla(player);
+        }
+        else if (npc != null)
+        {
+            npc.Parla();
+        }
+        else if (ia != null)
         {
             ia.Parla(player);
         }
@@ -220,8 +235,9 @@ class Comando
             // USA - Chiama il metodo polimorfo Usa() dell'oggetto
             oggettoSelezionato.Usa(player);
 
-            // Un componente installato nella navetta sparisce dalla stanza
-            if (oggettoSelezionato is OggettoChiave chiave && chiave.installato)
+            // Un oggetto consumato (componente installato, antidolorifici usati...)
+            // sparisce dalla stanza
+            if (oggettoSelezionato.Consumato)
                 player.stanza.lista.Remove(oggettoSelezionato);
         }
         else if (sceltaAzione == 1)
@@ -318,9 +334,8 @@ class Comando
         }
 
         // 3. Reinseriamo l'oggetto Target nell'inventario
-        //    (a meno che non sia stato scartato o installato nella navetta)
-        bool consumato = oggettoTarget is OggettoChiave chiave && chiave.installato;
-        if (sceltaAzione != 2 && !consumato) player.inventario.Push(oggettoTarget);
+        //    (a meno che non sia stato scartato o consumato dall'uso)
+        if (sceltaAzione != 2 && !oggettoTarget.Consumato) player.inventario.Push(oggettoTarget);
 
         // 4. Reinseriamo gli oggetti temporanei mantenendo l'ordine originario
         Console.WriteLine("\nReinserimento oggetti nella Pila...");

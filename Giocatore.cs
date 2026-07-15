@@ -85,7 +85,16 @@ class Giocatore
         }
 
         Console.WriteLine($"\nSei in: {stanza!.nome}");
-        Console.WriteLine($"{stanza.descr}\n");
+        Console.WriteLine($"{stanza.descr}");
+
+        if (stanza.personaggio != null)
+        {
+            if (stanza.personaggio.vivo)
+                Console.WriteLine($"{stanza.personaggio.nome} giace ferito a terra. Premi [T] per parlargli.");
+            else
+                Console.WriteLine($"Il corpo senza vita di {stanza.personaggio.nome} giace a terra.");
+        }
+        Console.WriteLine();
     }
 
     public void Muoviti(string direzione)

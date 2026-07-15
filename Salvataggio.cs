@@ -37,6 +37,9 @@ class DatiSalvataggio
 
     // Nome stanza -> nomi degli oggetti mobili presenti sul pavimento
     public Dictionary<string, List<string>> oggettiNelleStanze { get; set; } = new();
+
+    // Nome stanza -> il personaggio presente è vivo?
+    public Dictionary<string, bool> personaggiVivi { get; set; } = new();
 }
 
 static class Salvataggio
@@ -74,6 +77,9 @@ static class Salvataggio
                 {
                     if (porta != null) dati.porte[porta.nome] = porta.stato.ToString();
                 }
+
+                if (stanza.personaggio != null)
+                    dati.personaggiVivi[stanza.nome] = stanza.personaggio.vivo;
 
                 List<string> mobili = new();
                 foreach (Oggetto obj in stanza.lista)
@@ -211,6 +217,12 @@ static class Salvataggio
         player.contatorePassi = dati.contatorePassi;
         Global.componentiNavettaInstallati = dati.componentiNavetta;
         EventoIA.CaricaStato(dati.eventoStanza, dati.eventoAttivo, dati.eventoRisolto, dati.eventoSecondiRimasti);
+
+        foreach (var (nomeStanza, vivo) in dati.personaggiVivi)
+        {
+            if (stanzePerNome.TryGetValue(nomeStanza, out Stanza? stanza) && stanza.personaggio != null)
+                stanza.personaggio.vivo = vivo;
+        }
 
         int r = dati.coordinate[0], c = dati.coordinate[1];
         if (r >= 0 && r < Global.map.Length && c >= 0 && c < Global.map[r].Length && Global.map[r][c] != null)
