@@ -84,6 +84,14 @@ class Giocatore
             Console.ResetColor();
         }
 
+        if (EventoFinale.TimerAttivo)
+        {
+            int s = EventoFinale.SecondiRimasti;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\n  !!! AUTODISTRUZIONE IN CORSO: {s / 60}:{s % 60:D2} !!!");
+            Console.ResetColor();
+        }
+
         Console.WriteLine($"\nSei in: {stanza!.nome}");
         Console.WriteLine($"{stanza.descr}");
 

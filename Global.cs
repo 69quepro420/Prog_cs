@@ -844,5 +844,8 @@ class Global
         // Scelta della stanza casuale per l'evento dell'IA ostile
         // (va fatta DOPO la costruzione della mappa)
         EventoIA.Prepara();
+
+        // Reset dello scontro finale in Sala Comandi
+        EventoFinale.Reset();
     }
 }

@@ -26,6 +26,12 @@ class DatiSalvataggio
     public bool eventoRisolto { get; set; }
     public int eventoSecondiRimasti { get; set; }
 
+    // Stato dello scontro finale in Sala Comandi
+    public bool finaleDialogoFatto { get; set; }
+    public string finaleScelta { get; set; } = "Nessuna";
+    public bool finaleAutodistruzione { get; set; }
+    public int finaleSecondiRimasti { get; set; }
+
     // Nomi degli oggetti nell'inventario, dal fondo alla cima della pila
     public List<string> inventario { get; set; } = new();
 
@@ -66,6 +72,10 @@ static class Salvataggio
                 eventoAttivo = EventoIA.attivo,
                 eventoRisolto = EventoIA.risolto,
                 eventoSecondiRimasti = EventoIA.SecondiRimasti,
+                finaleDialogoFatto = EventoFinale.dialogoFatto,
+                finaleScelta = EventoFinale.scelta.ToString(),
+                finaleAutodistruzione = EventoFinale.autodistruzione,
+                finaleSecondiRimasti = EventoFinale.SecondiRimasti,
                 coordinate = new[] { player.coordinate[0], player.coordinate[1] },
                 // Stack enumera dalla cima al fondo: invertiamo per salvare dal fondo
                 inventario = player.inventario.Select(o => o.nome).Reverse().ToList()
@@ -217,6 +227,7 @@ static class Salvataggio
         player.contatorePassi = dati.contatorePassi;
         Global.componentiNavettaInstallati = dati.componentiNavetta;
         EventoIA.CaricaStato(dati.eventoStanza, dati.eventoAttivo, dati.eventoRisolto, dati.eventoSecondiRimasti);
+        EventoFinale.CaricaStato(dati.finaleDialogoFatto, dati.finaleScelta, dati.finaleAutodistruzione, dati.finaleSecondiRimasti);
 
         foreach (var (nomeStanza, vivo) in dati.personaggiVivi)
         {
