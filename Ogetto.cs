@@ -142,6 +142,54 @@ class Strumento : Oggetto
 }
 
 /// <summary>
+/// IA Tascabile: intelligenza artificiale amichevole portatile.
+/// Se è nell'inventario si può parlarle col tasto [T]; quando l'evento
+/// dell'IA ostile è attivo rivela (sotto forma di indovinello) la password
+/// del terminale della Sala Ossigeno.
+/// </summary>
+class IATascabile : Oggetto
+{
+    public IATascabile()
+    {
+        this.nome = "IA Tascabile";
+        this.descr = "Un piccolo dispositivo con un occhio luminoso. Sembra amichevole.";
+        this.peso = 0.5f;
+        this.mobile = true;
+    }
+
+    public override void Usa(Giocatore player)
+    {
+        Parla(player);
+    }
+
+    public void Parla(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("--- IA TASCABILE ---\n");
+
+        if (!EventoIA.attivo)
+        {
+            Console.WriteLine("\"Sistemi in standby. Nessuna minaccia rilevata... per ora.\"");
+        }
+        else if (EventoIA.risolto)
+        {
+            Console.WriteLine("\"Ottimo lavoro! I livelli di ossigeno sono di nuovo stabili.\"");
+        }
+        else
+        {
+            // Indovinello che rivela la password del Terminale di Sala Ossigeno (PLACEHOLDER)
+            Console.WriteLine("\"*bzzt* Presto! Il terminale della Sala Ossigeno può fermare tutto!\"");
+            Console.WriteLine();
+            Console.WriteLine("\"La password? Te la dico a modo mio... (PLACEHOLDER INDOVINELLO)\"");
+            Console.WriteLine("\"Sali quattro gradini, uno alla volta, partendo dal primo.\"");
+        }
+
+        Console.WriteLine("\nPremi un tasto per continuare...");
+        Console.ReadKey(true);
+    }
+}
+
+/// <summary>
 /// Oggetto chiave: componente di ricambio della navetta.
 /// Usato dentro la Navetta viene installato (sparisce dall'inventario);
 /// quando tutti i componenti sono installati il giocatore vince.

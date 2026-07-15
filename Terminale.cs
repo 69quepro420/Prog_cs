@@ -17,6 +17,10 @@ class Terminale : Oggetto
     public List<Porta> porteControllate = new List<Porta>();
     public List<Cassa> casseControllate = new List<Cassa>();
 
+    // Se true, la Rete Locale offre il comando di ripristino dell'ossigeno
+    // (usato dal terminale della Sala Ossigeno durante l'evento dell'IA ostile)
+    public bool sistemaOssigeno = false;
+
     public string asciiArt = @"
     d8'                    MP""""""`MM                                        MMP""""""YMM MP""""""`MM
     d8'                     M  mmmmm..M                                        M' .mmm. `M M  mmmmm..M
@@ -140,9 +144,22 @@ class Terminale : Oggetto
             Console.WriteLine($"\nE' il turno della {(turnoRiga ? "RIGA" : "COLONNA")} {bloccoIndice}.");
             Console.Write("Inserisci l'indice (0-3) della " + (turnoRiga ? "colonna" : "riga") + " da incrociare: ");
 
+            // Attesa dell'input con countdown dinamico: la riga del timer
+            // viene riscritta ogni secondo senza ridisegnare tutto lo schermo
+            int ultimoSecondo = -1;
             while (!Console.KeyAvailable)
             {
-                if (30 - (int)sw.Elapsed.TotalSeconds <= 0) break;
+                int rimasto = 30 - (int)sw.Elapsed.TotalSeconds;
+                if (rimasto <= 0) break;
+
+                if (rimasto != ultimoSecondo)
+                {
+                    ultimoSecondo = rimasto;
+                    (int col, int riga) = Console.GetCursorPosition();
+                    Console.SetCursorPosition(0, 0);
+                    Console.Write($"--- BREACH PROTOCOL --- TEMPO RIMASTO: {rimasto}s   ");
+                    Console.SetCursorPosition(col, riga);
+                }
                 Thread.Sleep(50);
             }
             if (30 - (int)sw.Elapsed.TotalSeconds <= 0) continue;
@@ -193,7 +210,7 @@ class Terminale : Oggetto
                     Console.Clear();
                     Console.WriteLine("--- RETE LOCALE ---\n");
 
-                    int totaleDispositivi = porteControllate.Count + casseControllate.Count;
+                    int totaleDispositivi = porteControllate.Count + casseControllate.Count + (sistemaOssigeno ? 1 : 0);
                     if (totaleDispositivi == 0)
                     {
                         Console.WriteLine("Nessun dispositivo controllato da questo terminale.");
@@ -218,6 +235,13 @@ class Terminale : Oggetto
                         mappa[idx] = ("cassa", c);
                         idx++;
                     }
+                    if (sistemaOssigeno)
+                    {
+                        string statoOssigeno = EventoIA.TimerAttivo ? "EMERGENZA" : "Normale";
+                        Console.WriteLine($"{idx}. [SISTEMA] Ripristino Ossigeno - Stato: {statoOssigeno}");
+                        mappa[idx] = ("ossigeno", this);
+                        idx++;
+                    }
 
                     Console.WriteLine("\nSeleziona il numero del dispositivo da gestire (0 per uscire): ");
                     string? input = Console.ReadLine();
@@ -226,7 +250,28 @@ class Terminale : Oggetto
                     if (!mappa.ContainsKey(sel)) continue;
 
                     var entry = mappa[sel];
-                    if (entry.tipo == "porta")
+                    if (entry.tipo == "ossigeno")
+                    {
+                        if (EventoIA.attivo && !EventoIA.risolto)
+                        {
+                            if (EventoIA.ControllaScadenza())
+                            {
+                                Console.WriteLine("\nTROPPO TARDI: i condotti sono ormai sigillati...");
+                            }
+                            else
+                            {
+                                EventoIA.RipristinaOssigeno();
+                                Console.WriteLine("\nOSSIGENO RIPRISTINATO. I condotti tornano a sibilare regolarmente.");
+                                Console.WriteLine("L'emergenza è rientrata.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nI livelli di ossigeno sono nella norma.");
+                        }
+                        Console.WriteLine("\nPremi un tasto per tornare alla rete locale..."); Console.ReadKey(true);
+                    }
+                    else if (entry.tipo == "porta")
                     {
                         var p = (Porta)entry.riferimento;
                         if (p.stato == Porta.StatoPorta.Aperta)

@@ -759,6 +759,7 @@ class Global
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
         ripostiglio.lista.Add(iniettoreCarburante);   // Ripostiglio
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
+        navetta.lista.Add(new IATascabile());         // IA amichevole, trovata nella navetta
 
         // --- TERMINALI ---
 
@@ -774,9 +775,10 @@ class Global
         terminaleMotoriEst2.porteControllate.Add(portaMotoriEst2CorrEstSud);
         motoriEst2.lista.Add(terminaleMotoriEst2);
 
-        // TERMINALE SALA OSSIGENO: BLOCCATO (password "1234") -> nessun dispositivo collegato
+        // TERMINALE SALA OSSIGENO: BLOCCATO (password "1234") -> sistema di ripristino ossigeno
         Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "1234");
         terminaleOssigeno.logs.Add("PLACEHOLDER");
+        terminaleOssigeno.sistemaOssigeno = true;
         salaOssigeno.lista.Add(terminaleOssigeno);
 
         // TERMINALE ARCHIVIO: CRIPTATO -> cassa dell'Archivio
@@ -822,5 +824,9 @@ class Global
         // Partiamo dalla navetta (Riga 5, Colonna 2)
         player.coordinate = new int[] { 5, 2 };
         player.stanza = navetta;
+
+        // Scelta della stanza casuale per l'evento dell'IA ostile
+        // (va fatta DOPO la costruzione della mappa)
+        EventoIA.Prepara();
     }
 }

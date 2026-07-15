@@ -75,6 +75,15 @@ class Giocatore
 
         Console.WriteLine("+-------------------------------------------+---------------+");
         Console.WriteLine($"  Peso trasportato: {PesoInventario():0.#}/{pesoMassimo:0.#} kg | Componenti navetta: {Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali}");
+
+        if (EventoIA.TimerAttivo)
+        {
+            int s = EventoIA.SecondiRimasti;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\n  !!! OSSIGENO IN ESAURIMENTO: {s / 60}:{s % 60:D2} !!!");
+            Console.ResetColor();
+        }
+
         Console.WriteLine($"\nSei in: {stanza!.nome}");
         Console.WriteLine($"{stanza.descr}\n");
     }
