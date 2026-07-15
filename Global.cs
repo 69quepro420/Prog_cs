@@ -4,8 +4,16 @@ class Global
 {
     public static Stanza[][] map = new Stanza[][]{};
 
+    // Obiettivo del gioco: installare i componenti di ricambio nella navetta
+    public const int componentiNavettaTotali = 3;
+    public static int componentiNavettaInstallati = 0;
+    public static bool partitaVinta = false;
+
     public static void Inizializza(Giocatore player)
     {
+        componentiNavettaInstallati = 0;
+        partitaVinta = false;
+
         // ====================================================================
         // 1. MAPPE CON CARATTERI FILLER (PUNTINI STELLARI) PER BLOCCARE L'ALLINEAMENTO
         // ====================================================================
@@ -631,8 +639,8 @@ class Global
         porto.portaNord = portaPortoMagazzino;
         magazzino.portaSud = portaPortoMagazzino;
 
-        // Magazzino ↔ Sala Motori Ovest 2 (portaOvest)
-        Porta portaMagazzinoMotoriOvest2 = new Porta("Porta Magazzino-Sala Motori Ovest 2", Porta.StatoPorta.Aperta);
+        // Magazzino ↔ Sala Motori Ovest 2 (portaOvest) - BLOCCATA: si apre col Piede di Porco usato in Magazzino
+        Porta portaMagazzinoMotoriOvest2 = new Porta("Porta Magazzino-Sala Motori Ovest 2", Porta.StatoPorta.Bloccata);
         magazzino.portaOvest = portaMagazzinoMotoriOvest2;
         motoriOvest2.portaEst = portaMagazzinoMotoriOvest2;
 
@@ -666,8 +674,8 @@ class Global
         ripostiglio.portaOvest = portaRipostCorrOvestNord;
         corrOvestN.portaEst = portaRipostCorrOvestNord;
 
-        // Corridoio Ovest Sud ↔ Sala Medica
-        Porta portaCorrOvestSudSalaMedica = new Porta("Porta Corridoio Ovest Sud-Sala Medica", Porta.StatoPorta.Aperta);
+        // Corridoio Ovest Sud ↔ Sala Medica - BLOCCATA: si apre col Martello di Emergenza usato in Corridoio Ovest Sud
+        Porta portaCorrOvestSudSalaMedica = new Porta("Porta Corridoio Ovest Sud-Sala Medica", Porta.StatoPorta.Bloccata);
         corrOvestS.portaEst = portaCorrOvestSudSalaMedica;
         salaMedica.portaOvest = portaCorrOvestSudSalaMedica;
 
@@ -676,8 +684,8 @@ class Global
         corrCentraleN.portaNord = portaCorrCentraleNSalaComandi;
         salaComandi.portaSud = portaCorrCentraleNSalaComandi;
 
-        // Archivio ↔ Corridoio Centrale Nord
-        Porta portaArchivioCorriCentraleN = new Porta("Porta Archivio-Corridoio Centrale Nord", Porta.StatoPorta.Aperta);
+        // Archivio ↔ Corridoio Centrale Nord - BLOCCATA: controllata dal Terminale di Sala Motori Ovest
+        Porta portaArchivioCorriCentraleN = new Porta("Porta Archivio-Corridoio Centrale Nord", Porta.StatoPorta.Bloccata);
         archivio.portaOvest = portaArchivioCorriCentraleN;
         corrCentraleN.portaEst = portaArchivioCorriCentraleN;
 
@@ -714,19 +722,43 @@ class Global
         // REGOLA: tutte le porte e le casse collegate a un terminale
         // nascono in stato Bloccata (vedi sezione 3 per le porte).
 
+        // --- OGGETTI CHIAVE (componenti della navetta: usali nella Navetta per vincere) ---
+        OggettoChiave carburatoreSonico = new OggettoChiave("Carburatore Sonico", "Un componente vitale della navetta. Vibra leggermente.", 2.5f);
+        OggettoChiave iniettoreCarburante = new OggettoChiave("Iniettore di Carburante", "Un componente della navetta. Puzza di cherosene.", 2.5f);
+        OggettoChiave antimateriaNeurale = new OggettoChiave("Antimateria Neurale", "Il nucleo energetico della navetta. Emana un bagliore inquietante.", 2.5f);
+
+        // --- STRUMENTI (aprono una porta se usati nella stanza giusta) ---
+        Strumento piedeDiPorco = new Strumento("Piede di Porco", "Una robusta leva d'acciaio. Perfetta per forzare porte.", 3f,
+            "Magazzino", portaMagazzinoMotoriOvest2,
+            "Infili il piede di porco nella fessura e fai leva con tutte le tue forze.");
+
+        // Il martello pesa quanto l'intero limite di trasporto: per usarlo bisogna scartare tutto il resto
+        Strumento martelloEmergenza = new Strumento("Martello di Emergenza", "Un enorme martello anti-incendio. Pesa una tonnellata: per portarlo devi avere le mani libere.", Giocatore.pesoMassimo,
+            "Corridoio Ovest (Sud)", portaCorrOvestSudSalaMedica,
+            "Con un colpo tremendo sfondi il pannello di blocco della porta.");
+
         // --- CASSE ---
 
+        // Cassa in Sala Motori Est 1 - SBLOCCATA: interagibile senza terminale
+        Cassa botolaParete = new Cassa("Botola nella parete", "Una botola di servizio semiaperta nella parete.", carburatoreSonico, Cassa.StatoCassa.Sbloccata);
+        motoriEst1.lista.Add(botolaParete);
+
         // Cassa in Archivio - BLOCCATA: controllata dal Terminale di Archivio
-        Cassa cassaArchivio = new Cassa("Cassa dell'Archivio", "Una cassa blindata collegata alla rete locale dell'archivio.", new Oggetto("Scheda Dati", "Una scheda dati con vecchi rapporti di bordo.", 0.2f, true), Cassa.StatoCassa.Bloccata);
+        Cassa cassaArchivio = new Cassa("Cassetto pieno di scartoffie", "Un cassetto d'archivio traboccante di documenti. La serratura è elettronica.", piedeDiPorco, Cassa.StatoCassa.Bloccata);
         archivio.lista.Add(cassaArchivio);
 
         // Cassa in Sala Medica - BLOCCATA: controllata dal Terminale di Sala Medica
-        Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", new Oggetto("Kit Medico", "Bende, disinfettante e stimolanti.", 1.0f, true), Cassa.StatoCassa.Bloccata);
+        Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", new Oggetto("Garza", "Una garza sterile. Chissà a cosa potrà servire...", 0.3f, true), Cassa.StatoCassa.Bloccata);
         salaMedica.lista.Add(cassaMedica);
 
         // Cassa in Ripostiglio - SBLOCCATA: non collegata a nessun terminale
         Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", new Oggetto("Nota Cartacea", "C'è scritto: 'Password terminali di servizio: 1234'.", 0.1f, true), Cassa.StatoCassa.Sbloccata);
         ripostiglio.lista.Add(cassaRipostiglio);
+
+        // --- OGGETTI SUL PAVIMENTO ---
+        corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
+        ripostiglio.lista.Add(iniettoreCarburante);   // Ripostiglio
+        salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
 
         // --- TERMINALI ---
 
@@ -759,6 +791,12 @@ class Global
         terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
         terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
         corrCentraleS.lista.Add(terminaleCorrCentraleS);
+
+        // TERMINALE SALA MOTORI OVEST: BLOCCATO (password "1234") -> porta Archivio-Corridoio Centrale Nord
+        Terminale terminaleMotoriOvest = new Terminale("Terminale di Sala Motori Ovest", "Un terminale di manutenzione impolverato, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        terminaleMotoriOvest.logs.Add("PLACEHOLDER");
+        terminaleMotoriOvest.porteControllate.Add(portaArchivioCorriCentraleN);
+        motoriOvest1.lista.Add(terminaleMotoriOvest);
 
         // TERMINALE SALA MEDICA: CRIPTATO -> cassa Medica
         Terminale terminaleMedica = new Terminale("Terminale di Sala Medica", "Un terminale medico protetto da crittografia.", StatoTerminale.Criptato, "");

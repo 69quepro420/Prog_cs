@@ -100,3 +100,84 @@ class Cassa : Oggetto
             stato = StatoCassa.Sbloccata;
     }
 }
+
+/// <summary>
+/// Strumento: oggetto che, usato nella stanza giusta, apre una porta.
+/// Usato altrove non produce alcun effetto. Non si consuma con l'uso.
+/// </summary>
+class Strumento : Oggetto
+{
+    public string stanzaUso;      // nome della stanza in cui lo strumento funziona
+    public Porta porta;           // porta che viene aperta
+    public string messaggioUso;   // messaggio mostrato quando l'uso riesce
+
+    public Strumento(string nome, string descr, float peso, string stanzaUso, Porta porta, string messaggioUso)
+    {
+        this.nome = nome;
+        this.descr = descr;
+        this.peso = peso;
+        this.mobile = true;
+        this.stanzaUso = stanzaUso;
+        this.porta = porta;
+        this.messaggioUso = messaggioUso;
+    }
+
+    public override void Usa(Giocatore player)
+    {
+        if (player.stanza!.nome != stanzaUso)
+        {
+            Console.WriteLine($"\nQui {nome} non serve a niente.");
+        }
+        else if (porta.stato == Porta.StatoPorta.Aperta)
+        {
+            Console.WriteLine($"\nLa porta '{porta.nome}' è già aperta.");
+        }
+        else
+        {
+            porta.CambiaStato(Porta.StatoPorta.Aperta);
+            Console.WriteLine($"\n{messaggioUso}");
+            Console.WriteLine($"La porta '{porta.nome}' ora è aperta!");
+        }
+    }
+}
+
+/// <summary>
+/// Oggetto chiave: componente di ricambio della navetta.
+/// Usato dentro la Navetta viene installato (sparisce dall'inventario);
+/// quando tutti i componenti sono installati il giocatore vince.
+/// </summary>
+class OggettoChiave : Oggetto
+{
+    public bool installato = false;
+
+    public OggettoChiave(string nome, string descr, float peso)
+    {
+        this.nome = nome;
+        this.descr = descr;
+        this.peso = peso;
+        this.mobile = true;
+    }
+
+    public override void Usa(Giocatore player)
+    {
+        if (player.stanza!.nome != "Navetta")
+        {
+            Console.WriteLine($"\n{nome} è un componente della navetta: va installato lì.");
+            return;
+        }
+
+        installato = true;
+        Global.componentiNavettaInstallati++;
+        Console.WriteLine($"\nInstalli {nome} nella navetta. " +
+            $"({Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali} componenti)");
+
+        if (Global.componentiNavettaInstallati >= Global.componentiNavettaTotali)
+        {
+            Global.partitaVinta = true;
+        }
+        else
+        {
+            Console.WriteLine("La navetta ha ancora bisogno di altri componenti...");
+        }
+    }
+}
