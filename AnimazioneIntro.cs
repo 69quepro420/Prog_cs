@@ -41,6 +41,30 @@ class AnimazioneIntro
     }
 
     /// <summary>
+    /// Mostra un dialogo forzato riusando lo stesso sistema dell'intro:
+    /// una frase alla volta, un tasto (o il timeout) fa avanzare alla successiva.
+    /// </summary>
+    public static void MostraDialogo(string[] frasi)
+    {
+        Console.CursorVisible = false;
+
+        foreach (string frase in frasi)
+        {
+            Console.Clear();
+            Console.WriteLine("\n\n");
+            Console.WriteLine("===========================================================");
+            Console.WriteLine($" {frase}");
+            Console.WriteLine("===========================================================");
+            Console.WriteLine("\n(Premi un tasto per continuare)");
+
+            AspettaOTastoPremuto(4000);
+        }
+
+        Console.CursorVisible = true;
+        Console.Clear();
+    }
+
+    /// <summary>
     /// Attende i millisecondi indicati controllando l'input a piccoli intervalli,
     /// così non blocca la CPU con ridisegni continui.
     /// Ritorna true se l'utente ha premuto un tasto.

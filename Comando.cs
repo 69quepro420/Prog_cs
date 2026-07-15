@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Project;
 
@@ -12,9 +13,16 @@ class Comando
         {
             player.DisegnaHUD();
 
-            // Ascolta il tasto premuto senza mostrarlo a schermo (true)
-            ConsoleKeyInfo infoTasto = Console.ReadKey(true);
-            string tasto = infoTasto.Key.ToString().ToUpper();
+            // Attesa dell'input non bloccante: durante l'evento dell'IA ostile
+            // l'HUD viene ridisegnato ogni secondo per far scorrere il countdown
+            ConsoleKeyInfo? infoTasto = AttendiTasto(player);
+            if (infoTasto == null) // timer scaduto durante l'attesa
+            {
+                SchermataSconfitta(player);
+                return;
+            }
+
+            string tasto = infoTasto.Value.Key.ToString().ToUpper();
 
             switch (tasto)
             {
@@ -23,6 +31,7 @@ class Comando
                 case "S":
                 case "D":
                     player.Muoviti(tasto);
+                    EventoIA.ControllaIngresso(player); // la stanza dell'evento fa scattare l'IA ostile
                     break;
 
                 case "M":
@@ -38,13 +47,19 @@ class Comando
                     break;
 
                 case "T":
-                    Console.WriteLine("\nNon c'è nessuno con cui parlare qui. (Premi un tasto)");
-                    Console.ReadKey(true);
+                    Parla(player);
                     break;
 
                 case "ESCAPE":
                     if (MenuPausa(player)) return; // torna al menu principale
                     break;
+            }
+
+            // Controllo sconfitta: ossigeno esaurito mentre si era in giro/nei menu
+            if (EventoIA.ControllaScadenza())
+            {
+                SchermataSconfitta(player);
+                return;
             }
 
             // Controllo vittoria: tutti i componenti della navetta installati
@@ -54,6 +69,68 @@ class Comando
                 return;
             }
         }
+    }
+
+    /// <summary>
+    /// Attende un tasto ridisegnando l'HUD a ogni secondo quando il timer
+    /// dell'ossigeno è attivo. Ritorna null se il tempo scade durante l'attesa.
+    /// </summary>
+    private static ConsoleKeyInfo? AttendiTasto(Giocatore player)
+    {
+        int ultimoSecondo = -1;
+        while (!Console.KeyAvailable)
+        {
+            if (EventoIA.ControllaScadenza()) return null;
+
+            if (EventoIA.TimerAttivo)
+            {
+                int s = EventoIA.SecondiRimasti;
+                if (s != ultimoSecondo)
+                {
+                    ultimoSecondo = s;
+                    player.DisegnaHUD();
+                }
+            }
+            Thread.Sleep(50);
+        }
+        return Console.ReadKey(true);
+    }
+
+    /// <summary>
+    /// Tasto [T]: parla con l'IA Tascabile, se è nell'inventario.
+    /// </summary>
+    private static void Parla(Giocatore player)
+    {
+        IATascabile? ia = player.inventario.OfType<IATascabile>().FirstOrDefault();
+        if (ia != null)
+        {
+            ia.Parla(player);
+        }
+        else
+        {
+            Console.WriteLine("\nNon c'è nessuno con cui parlare qui. (Premi un tasto)");
+            Console.ReadKey(true);
+        }
+    }
+
+    /// <summary>
+    /// Schermata di sconfitta: l'ossigeno è finito.
+    /// </summary>
+    private static void SchermataSconfitta(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("                   OSSIGENO ESAURITO                       ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine();
+        Console.WriteLine(" L'aria si fa sempre più sottile... il buio ti avvolge.");
+        Console.WriteLine($" La stazione ha reclamato anche te, {player.nome}.");
+        Console.WriteLine();
+        Console.WriteLine("                      HAI PERSO");
+        Console.WriteLine();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
+        Console.ReadKey(true);
     }
 
     /// <summary>

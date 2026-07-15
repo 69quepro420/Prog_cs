@@ -20,6 +20,12 @@ class DatiSalvataggio
     public int componentiNavetta { get; set; }
     public int[] coordinate { get; set; } = new[] { 5, 2 };
 
+    // Stato dell'evento dell'IA ostile
+    public string eventoStanza { get; set; } = "";
+    public bool eventoAttivo { get; set; }
+    public bool eventoRisolto { get; set; }
+    public int eventoSecondiRimasti { get; set; }
+
     // Nomi degli oggetti nell'inventario, dal fondo alla cima della pila
     public List<string> inventario { get; set; } = new();
 
@@ -53,6 +59,10 @@ static class Salvataggio
                 vita = player.vita,
                 contatorePassi = player.contatorePassi,
                 componentiNavetta = Global.componentiNavettaInstallati,
+                eventoStanza = EventoIA.stanzaEvento,
+                eventoAttivo = EventoIA.attivo,
+                eventoRisolto = EventoIA.risolto,
+                eventoSecondiRimasti = EventoIA.SecondiRimasti,
                 coordinate = new[] { player.coordinate[0], player.coordinate[1] },
                 // Stack enumera dalla cima al fondo: invertiamo per salvare dal fondo
                 inventario = player.inventario.Select(o => o.nome).Reverse().ToList()
@@ -200,6 +210,7 @@ static class Salvataggio
         player.vita = dati.vita;
         player.contatorePassi = dati.contatorePassi;
         Global.componentiNavettaInstallati = dati.componentiNavetta;
+        EventoIA.CaricaStato(dati.eventoStanza, dati.eventoAttivo, dati.eventoRisolto, dati.eventoSecondiRimasti);
 
         int r = dati.coordinate[0], c = dati.coordinate[1];
         if (r >= 0 && r < Global.map.Length && c >= 0 && c < Global.map[r].Length && Global.map[r][c] != null)
