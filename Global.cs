@@ -750,8 +750,10 @@ class Global
         Cassa cassaArchivio = new Cassa("Cassetto pieno di scartoffie", "Un cassetto d'archivio traboccante di documenti. La serratura è elettronica.", piedeDiPorco, Cassa.StatoCassa.Bloccata);
         archivio.lista.Add(cassaArchivio);
 
-        // Cassa in Sala Medica - BLOCCATA: controllata dal Terminale di Sala Medica
-        Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", new Oggetto("Garza", "Una garza sterile. Chissà a cosa potrà servire...", 0.3f, true), Cassa.StatoCassa.Bloccata);
+        // Cassa in Sala Medica - BLOCCATA: controllata dal Terminale di Sala Medica.
+        // Il contenuto (Antidolorifici) viene assegnato più sotto, quando esistono
+        // sia il ferito Ryan sia il terminale del corridoio centrale.
+        Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", null, Cassa.StatoCassa.Bloccata);
         salaMedica.lista.Add(cassaMedica);
 
         // Cassa in Ripostiglio - SBLOCCATA: non collegata a nessun terminale
@@ -809,6 +811,16 @@ class Global
         terminaleMedica.logs.Add("PLACEHOLDER");
         terminaleMedica.casseControllate.Add(cassaMedica);
         salaMedica.lista.Add(terminaleMedica);
+
+        // --- RYAN: membro dell'equipaggio ferito nel Corridoio Centrale Nord ---
+        Personaggio ryan = new Personaggio("Ryan",
+            "\"Aaah... la ferita... fa un male cane... ti prego... trova qualcosa per il dolore...\" (PLACEHOLDER)",
+            "Ryan giace immobile. È morto: non risponde più.");
+        corrCentraleN.personaggio = ryan;
+
+        // Gli Antidolorifici nella cassa medica: somministrati a Ryan rivelano
+        // la password del terminale del corridoio centrale, poi lui muore.
+        cassaMedica.contenuto = new Antidolorifici(ryan, terminaleCorrCentraleS, "Corridoio Centrale (Nord)");
 
         // ====================================================================
         // 5. INSERIMENTO NELLA GRIGLIA LOGICA (6 Righe, 5 Colonne)

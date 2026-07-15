@@ -9,6 +9,9 @@ class Stanza
     public bool visitata { get; set; }
     public string mappaAscii { get; set; } // <--- Nuova proprietà per la cartina
     public List<Oggetto> lista { get; set; }
+
+    // Personaggio non giocante eventualmente presente nella stanza
+    public Personaggio? personaggio { get; set; }
     
     // Porte in 4 direzioni
     public Porta? portaNord { get; set; }
