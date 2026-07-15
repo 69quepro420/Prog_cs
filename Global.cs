@@ -595,29 +595,6 @@ class Global
         Stanza porto = new Stanza("Porto di Sbarco", "La camera di compensazione e attracco navette.", mapPorto);
         Stanza navetta = new Stanza("Navetta", "Il veicolo con cui siete arrivati. I motori sono spenti.", mapNavetta);
         
-        // === AGGIUNTA DEI TERMINALI - TEST DI TUTTI E TRE GLI STATI ===
-        
-        // TERMINALE 1: BLOCCATO (richiede password "1234")
-        Terminale terminaleMagazzino = new Terminale("Terminale Logistico", "Un terminale bloccato da password.", StatoTerminale.Bloccato, "1234");
-        terminaleMagazzino.logs.Add("MEMO: Smettetela di usare '1234' come password per il magazzino!");
-        terminaleMagazzino.logs.Add("AVVISO: Accesso limitato - Verificare credenziali.");
-        magazzino.lista.Add(terminaleMagazzino);
-
-        // TERMINALE 2: CRIPTATO (richiede il minigioco Breach Protocol)
-        Terminale terminaleOssigeno = new Terminale("Terminale Ambientale", "Il quadro dei comandi vitale. Il sistema è criptato e richiede una violazione.", StatoTerminale.Criptato, "");
-        terminaleOssigeno.logs.Add("AVVISO SISTEMA: Rilevato blocco porte.");
-        terminaleOssigeno.logs.Add("AUTORITÀ: Protezione crittografica attivata.");
-        terminaleOssigeno.logs.Add("NOTA: Tempo limite di vulnerabilità: 30 secondi.");
-        salaOssigeno.lista.Add(terminaleOssigeno);
-
-        // TERMINALE 3: SBLOCCATO (accesso immediato)
-        Terminale terminaleArchivio = new Terminale("Terminale Archivi", "Un vecchio terminale già sbloccato dal precedente operatore.", StatoTerminale.Sbloccato, "");
-        terminaleArchivio.logs.Add("ULTIMO ACCESSO: 72 ore fa");
-        terminaleArchivio.logs.Add("STATO: Sistema operativo attivo");
-        terminaleArchivio.logs.Add("DATABASE: Dati di navigazione, coordinate stellari, rapporti storici");
-        terminaleArchivio.logs.Add("AVVISO: Backup programmato per domani 06:00");
-        archivio.lista.Add(terminaleArchivio);
-
         // ====================================================================
         // 3. CONFIGURAZIONE DELLE PORTE - SECONDO LO SCHEMA SPECIFICATO
         // ====================================================================
@@ -659,8 +636,8 @@ class Global
         magazzino.portaOvest = portaMagazzinoMotoriOvest2;
         motoriOvest2.portaEst = portaMagazzinoMotoriOvest2;
 
-        // Magazzino ↔ Sala Motori Est 1 (portaEst)
-        Porta portaMagazzinoMotoriEst1 = new Porta("Porta Magazzino-Sala Motori Est 1", Porta.StatoPorta.Aperta);
+        // Magazzino ↔ Sala Motori Est 1 (portaEst) - BLOCCATA: controllata dal Terminale di Magazzino
+        Porta portaMagazzinoMotoriEst1 = new Porta("Porta Magazzino-Sala Motori Est 1", Porta.StatoPorta.Bloccata);
         magazzino.portaEst = portaMagazzinoMotoriEst1;
         motoriEst1.portaOvest = portaMagazzinoMotoriEst1;
 
@@ -669,8 +646,8 @@ class Global
         motoriEst1.portaNord = portaMotoriEst1SalaOssigeno;
         salaOssigeno.portaSud = portaMotoriEst1SalaOssigeno;
 
-        // Sala Motori Est 2 ↔ Corridoio Est Sud
-        Porta portaMotoriEst2CorrEstSud = new Porta("Porta Sala Motori Est 2-Corridoio Est Sud", Porta.StatoPorta.Aperta);
+        // Sala Motori Est 2 ↔ Corridoio Est Sud - BLOCCATA: controllata dal Terminale di Sala Motori Est 2
+        Porta portaMotoriEst2CorrEstSud = new Porta("Porta Sala Motori Est 2-Corridoio Est Sud", Porta.StatoPorta.Bloccata);
         motoriEst2.portaNord = portaMotoriEst2CorrEstSud;
         corrEstS.portaSud = portaMotoriEst2CorrEstSud;
 
@@ -694,8 +671,8 @@ class Global
         corrOvestS.portaEst = portaCorrOvestSudSalaMedica;
         salaMedica.portaOvest = portaCorrOvestSudSalaMedica;
 
-        // Corridoio Centrale Nord ↔ Sala Comandi
-        Porta portaCorrCentraleNSalaComandi = new Porta("Porta Corridoio Centrale Nord-Sala Comandi", Porta.StatoPorta.Aperta);
+        // Corridoio Centrale Nord ↔ Sala Comandi - BLOCCATA: controllata dal Terminale in Corridoio Centrale Sud
+        Porta portaCorrCentraleNSalaComandi = new Porta("Porta Corridoio Centrale Nord-Sala Comandi", Porta.StatoPorta.Bloccata);
         corrCentraleN.portaNord = portaCorrCentraleNSalaComandi;
         salaComandi.portaSud = portaCorrCentraleNSalaComandi;
 
@@ -732,7 +709,65 @@ class Global
         corrOvestS.portaNord = portaCorrOvestNordSud;
 
         // ====================================================================
-        // 4. INSERIMENTO NELLA GRIGLIA LOGICA (6 Righe, 5 Colonne)
+        // 4. CASSE E TERMINALI (RETE LOCALE)
+        // ====================================================================
+        // REGOLA: tutte le porte e le casse collegate a un terminale
+        // nascono in stato Bloccata (vedi sezione 3 per le porte).
+
+        // --- CASSE ---
+
+        // Cassa in Archivio - BLOCCATA: controllata dal Terminale di Archivio
+        Cassa cassaArchivio = new Cassa("Cassa dell'Archivio", "Una cassa blindata collegata alla rete locale dell'archivio.", new Oggetto("Scheda Dati", "Una scheda dati con vecchi rapporti di bordo.", 0.2f, true), Cassa.StatoCassa.Bloccata);
+        archivio.lista.Add(cassaArchivio);
+
+        // Cassa in Sala Medica - BLOCCATA: controllata dal Terminale di Sala Medica
+        Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", new Oggetto("Kit Medico", "Bende, disinfettante e stimolanti.", 1.0f, true), Cassa.StatoCassa.Bloccata);
+        salaMedica.lista.Add(cassaMedica);
+
+        // Cassa in Ripostiglio - SBLOCCATA: non collegata a nessun terminale
+        Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", new Oggetto("Nota Cartacea", "C'è scritto: 'Password terminali di servizio: 1234'.", 0.1f, true), Cassa.StatoCassa.Sbloccata);
+        ripostiglio.lista.Add(cassaRipostiglio);
+
+        // --- TERMINALI ---
+
+        // TERMINALE MAGAZZINO: CRIPTATO -> porta Magazzino-Sala Motori Est 1
+        Terminale terminaleMagazzino = new Terminale("Terminale di Magazzino", "Un terminale logistico. Il sistema è criptato e richiede una violazione.", StatoTerminale.Criptato, "");
+        terminaleMagazzino.logs.Add("PLACEHOLDER");
+        terminaleMagazzino.porteControllate.Add(portaMagazzinoMotoriEst1);
+        magazzino.lista.Add(terminaleMagazzino);
+
+        // TERMINALE SALA MOTORI EST 2: BLOCCATO (password "1234") -> porta Sala Motori Est 2-Corridoio Est Sud
+        Terminale terminaleMotoriEst2 = new Terminale("Terminale di Sala Motori Est 2", "Un terminale di manutenzione bloccato da password.", StatoTerminale.Bloccato, "1234");
+        terminaleMotoriEst2.logs.Add("PLACEHOLDER");
+        terminaleMotoriEst2.porteControllate.Add(portaMotoriEst2CorrEstSud);
+        motoriEst2.lista.Add(terminaleMotoriEst2);
+
+        // TERMINALE SALA OSSIGENO: BLOCCATO (password "1234") -> nessun dispositivo collegato
+        Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        terminaleOssigeno.logs.Add("PLACEHOLDER");
+        salaOssigeno.lista.Add(terminaleOssigeno);
+
+        // TERMINALE ARCHIVIO: CRIPTATO -> cassa dell'Archivio
+        Terminale terminaleArchivio = new Terminale("Terminale di Archivio", "Un terminale dati protetto da crittografia.", StatoTerminale.Criptato, "");
+        terminaleArchivio.logs.Add("PLACEHOLDER");
+        terminaleArchivio.casseControllate.Add(cassaArchivio);
+        archivio.lista.Add(terminaleArchivio);
+
+        // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "1234", nota nella cassa del ripostiglio)
+        // -> porta Corridoio Centrale Nord-Sala Comandi
+        Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
+        terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
+        corrCentraleS.lista.Add(terminaleCorrCentraleS);
+
+        // TERMINALE SALA MEDICA: CRIPTATO -> cassa Medica
+        Terminale terminaleMedica = new Terminale("Terminale di Sala Medica", "Un terminale medico protetto da crittografia.", StatoTerminale.Criptato, "");
+        terminaleMedica.logs.Add("PLACEHOLDER");
+        terminaleMedica.casseControllate.Add(cassaMedica);
+        salaMedica.lista.Add(terminaleMedica);
+
+        // ====================================================================
+        // 5. INSERIMENTO NELLA GRIGLIA LOGICA (6 Righe, 5 Colonne)
         // ====================================================================
         map = new Stanza[][] {
             /* Riga 0 */ new Stanza[] { null, null, salaComandi, null, null },
