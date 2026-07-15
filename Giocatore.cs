@@ -48,7 +48,8 @@ class Giocatore
             " [E] INVENTARIO",
             " [C] CERCA OGGETTI",
             " [T] PARLA",
-            " [M] MAPPA"
+            " [M] MAPPA",
+            " [ESC] PAUSA/SALVA"
         };
 
         List<string> invTesto = inventario.Select(o => "- " + o.nome).ToList();
