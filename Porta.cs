@@ -18,13 +18,18 @@ class Porta
     public string nome { get; set; }
     public StatoPorta stato { get; set; }
 
+    // Messaggio/indizio mostrato quando il giocatore prova ad attraversare la
+    // porta mentre è bloccata. Se vuoto, viene usato il messaggio generico.
+    public string messaggioBloccata { get; set; } = "";
+
     /// <summary>
     /// Costruttore della porta
     /// </summary>
-    public Porta(string nome, StatoPorta stato = StatoPorta.Aperta)
+    public Porta(string nome, StatoPorta stato = StatoPorta.Aperta, string messaggioBloccata = "")
     {
         this.nome = nome;
         this.stato = stato;
+        this.messaggioBloccata = messaggioBloccata;
     }
 
     /// <summary>
@@ -35,7 +40,9 @@ class Porta
         return stato switch
         {
             StatoPorta.Aperta => "",  // Passaggio libero, nessun messaggio
-            StatoPorta.Bloccata => $"\n⛔ La porta '{nome}' è bloccata. Non puoi passare.",
+            StatoPorta.Bloccata => string.IsNullOrEmpty(messaggioBloccata)
+                ? $"\n⛔ La porta '{nome}' è bloccata. Non puoi passare."
+                : $"\n⛔ {messaggioBloccata}",
             StatoPorta.Rotta => $"\n🔨 La porta '{nome}' è rotta. Non esiste alcun modo per passare.",
             _ => "Errore sconosciuto"
         };

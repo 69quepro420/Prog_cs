@@ -635,12 +635,14 @@ class Global
         porto.portaSud = portaNavettaPorto;
 
         // Porto ↔ Magazzino - BLOCCATA: si apre usando l'IA Tascabile nel Porto
-        Porta portaPortoMagazzino = new Porta("Porta Porto-Magazzino", Porta.StatoPorta.Bloccata);
+        Porta portaPortoMagazzino = new Porta("Porta Porto-Magazzino", Porta.StatoPorta.Bloccata,
+            "Accanto alla porta noti un foro USB per l'ingresso di un dispositivo.");
         porto.portaNord = portaPortoMagazzino;
         magazzino.portaSud = portaPortoMagazzino;
 
         // Magazzino ↔ Sala Motori Ovest 2 (portaOvest) - BLOCCATA: si apre col Piede di Porco usato in Magazzino
-        Porta portaMagazzinoMotoriOvest2 = new Porta("Porta Magazzino-Sala Motori Ovest 2", Porta.StatoPorta.Bloccata);
+        Porta portaMagazzinoMotoriOvest2 = new Porta("Porta Magazzino-Sala Motori Ovest 2", Porta.StatoPorta.Bloccata,
+            "La porta elettronica si è bloccata. Forse si potrebbe forzare con l'attrezzo giusto.");
         magazzino.portaOvest = portaMagazzinoMotoriOvest2;
         motoriOvest2.portaEst = portaMagazzinoMotoriOvest2;
 
@@ -675,7 +677,8 @@ class Global
         corrOvestN.portaEst = portaRipostCorrOvestNord;
 
         // Corridoio Ovest Sud ↔ Sala Medica - BLOCCATA: si apre col Martello di Emergenza usato in Corridoio Ovest Sud
-        Porta portaCorrOvestSudSalaMedica = new Porta("Porta Corridoio Ovest Sud-Sala Medica", Porta.StatoPorta.Bloccata);
+        Porta portaCorrOvestSudSalaMedica = new Porta("Porta Corridoio Ovest Sud-Sala Medica", Porta.StatoPorta.Bloccata,
+            "Delle lamiere contorte bloccano il passaggio. Bisognerebbe sfondarle per entrare.");
         corrOvestS.portaEst = portaCorrOvestSudSalaMedica;
         salaMedica.portaOvest = portaCorrOvestSudSalaMedica;
 
