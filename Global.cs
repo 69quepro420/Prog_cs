@@ -634,8 +634,8 @@ class Global
         navetta.portaNord = portaNavettaPorto;
         porto.portaSud = portaNavettaPorto;
 
-        // Porto ↔ Magazzino
-        Porta portaPortoMagazzino = new Porta("Porta Porto-Magazzino", Porta.StatoPorta.Aperta);
+        // Porto ↔ Magazzino - BLOCCATA: si apre usando l'IA Tascabile nel Porto
+        Porta portaPortoMagazzino = new Porta("Porta Porto-Magazzino", Porta.StatoPorta.Bloccata);
         porto.portaNord = portaPortoMagazzino;
         magazzino.portaSud = portaPortoMagazzino;
 
@@ -759,7 +759,8 @@ class Global
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
         ripostiglio.lista.Add(iniettoreCarburante);   // Ripostiglio
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
-        navetta.lista.Add(new IATascabile());         // IA amichevole, trovata nella navetta
+        // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
+        porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
 
         // --- TERMINALI ---
 
