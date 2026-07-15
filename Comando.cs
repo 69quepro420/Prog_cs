@@ -16,10 +16,10 @@ class Comando
             // Attesa dell'input non bloccante: durante l'evento dell'IA ostile
             // l'HUD viene ridisegnato ogni secondo per far scorrere il countdown
             ConsoleKeyInfo? infoTasto = AttendiTasto(player);
-            if (infoTasto == null) // timer scaduto durante l'attesa
+            if (infoTasto == null) // un timer è scaduto durante l'attesa
             {
-                SchermataSconfitta(player);
-                return;
+                if (GestisciFinePartita(player)) return;
+                continue;
             }
 
             string tasto = infoTasto.Value.Key.ToString().ToUpper();
@@ -31,7 +31,8 @@ class Comando
                 case "S":
                 case "D":
                     player.Muoviti(tasto);
-                    EventoIA.ControllaIngresso(player); // la stanza dell'evento fa scattare l'IA ostile
+                    EventoIA.ControllaIngresso(player);     // stanza casuale: IA ostile
+                    EventoFinale.ControllaIngresso(player); // Sala Comandi: scontro finale
                     break;
 
                 case "M":
@@ -55,36 +56,61 @@ class Comando
                     break;
             }
 
-            // Controllo sconfitta: ossigeno esaurito mentre si era in giro/nei menu
-            if (EventoIA.ControllaScadenza())
-            {
-                SchermataSconfitta(player);
-                return;
-            }
-
-            // Controllo vittoria: tutti i componenti della navetta installati
-            if (Global.partitaVinta)
-            {
-                SchermataVittoria(player);
-                return;
-            }
+            // Controllo di fine partita (vittoria/sconfitta) dopo ogni azione
+            if (GestisciFinePartita(player)) return;
         }
     }
 
     /// <summary>
-    /// Attende un tasto ridisegnando l'HUD a ogni secondo quando il timer
-    /// dell'ossigeno è attivo. Ritorna null se il tempo scade durante l'attesa.
+    /// Valuta le condizioni di fine partita e mostra il finale appropriato.
+    /// Ritorna true se la partita è terminata (bisogna uscire dal ciclo).
+    /// </summary>
+    private static bool GestisciFinePartita(Giocatore player)
+    {
+        // 1. Vittoria: i 3 componenti sono installati nella navetta.
+        //    Ha priorità: se sei fuggito in tempo, i timer non contano più.
+        if (Global.partitaVinta)
+        {
+            if (EventoFinale.scelta == EventoFinale.Scelta.Autodistruzione)
+                FinaleFugaAutodistruzione(player);
+            else if (EventoFinale.scelta == EventoFinale.Scelta.LasciaIAViva)
+                FinaleIAViva(player);
+            else
+                SchermataVittoria(player); // fallback (non dovrebbe accadere)
+            return true;
+        }
+
+        // 2. Morte per esaurimento ossigeno
+        if (EventoIA.ControllaScadenza())
+        {
+            SchermataSconfitta(player);
+            return true;
+        }
+
+        // 3. Morte a bordo per autodistruzione
+        if (EventoFinale.ControllaScadenza())
+        {
+            FinaleMorteAutodistruzione(player);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Attende un tasto ridisegnando l'HUD a ogni secondo quando un timer
+    /// (ossigeno o autodistruzione) è attivo. Ritorna null se un timer scade.
     /// </summary>
     private static ConsoleKeyInfo? AttendiTasto(Giocatore player)
     {
         int ultimoSecondo = -1;
         while (!Console.KeyAvailable)
         {
-            if (EventoIA.ControllaScadenza()) return null;
+            if (EventoIA.ControllaScadenza() || EventoFinale.ControllaScadenza()) return null;
 
-            if (EventoIA.TimerAttivo)
+            if (EventoIA.TimerAttivo || EventoFinale.TimerAttivo)
             {
-                int s = EventoIA.SecondiRimasti;
+                int s = EventoFinale.TimerAttivo ? EventoFinale.SecondiRimasti : EventoIA.SecondiRimasti;
                 if (s != ultimoSecondo)
                 {
                     ultimoSecondo = s;
@@ -162,6 +188,72 @@ class Comando
         Console.WriteLine($" Complimenti, {player.nome}: hai lasciato la stazione!");
         Console.WriteLine();
         Console.WriteLine($" Passi compiuti: {player.contatorePassi}");
+        Console.WriteLine();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
+        Console.ReadKey(true);
+    }
+
+    /// <summary>
+    /// FINALE 1: autodistruzione attivata e fuga riuscita in tempo.
+    /// </summary>
+    private static void FinaleFugaAutodistruzione(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("                    FUGA ALL'ULTIMO SECONDO                ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine();
+        Console.WriteLine(" La navetta si stacca mentre la stazione esplode alle tue spalle.");
+        Console.WriteLine(" L'IA ostile - e con lei la minaccia per le altre navi - è");
+        Console.WriteLine(" incenerita nel silenzio dello spazio.");
+        Console.WriteLine($" Ce l'hai fatta, {player.nome}. Sei un eroe. (PLACEHOLDER)");
+        Console.WriteLine();
+        Console.WriteLine("                   HAI VINTO - FINALE EROE");
+        Console.WriteLine();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
+        Console.ReadKey(true);
+    }
+
+    /// <summary>
+    /// FINALE 2: autodistruzione attivata ma timer scaduto a bordo.
+    /// </summary>
+    private static void FinaleMorteAutodistruzione(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("                      SACRIFICIO FINALE                    ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine();
+        Console.WriteLine(" Non hai raggiunto la navetta in tempo.");
+        Console.WriteLine(" La stazione si squarcia in un lampo accecante.");
+        Console.WriteLine($" Sei morto, {player.nome}, ma l'IA ostile è morta con te:");
+        Console.WriteLine(" le altre navi sono salve. (PLACEHOLDER)");
+        Console.WriteLine();
+        Console.WriteLine("              FINE - SACRIFICIO (l'IA è distrutta)");
+        Console.WriteLine();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
+        Console.ReadKey(true);
+    }
+
+    /// <summary>
+    /// FINALE 3: l'IA viene lasciata in vita e il giocatore fugge.
+    /// </summary>
+    private static void FinaleIAViva(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("                     FUGA NELL'OMBRA                       ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine();
+        Console.WriteLine(" La navetta si allontana dalla stazione intatta.");
+        Console.WriteLine(" Alle tue spalle, l'IA ostile è ancora viva e libera:");
+        Console.WriteLine(" i suoi segnali si propagano già verso le altre navi.");
+        Console.WriteLine($" Ti sei salvato, {player.nome}, ma a quale prezzo? (PLACEHOLDER)");
+        Console.WriteLine();
+        Console.WriteLine("            FINE - FUGA (l'IA è ancora là fuori)");
         Console.WriteLine();
         Console.WriteLine("===========================================================");
         Console.WriteLine("\nPremi un tasto per tornare al menu principale...");
