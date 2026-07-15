@@ -20,10 +20,11 @@ static class EventoIA
 
     static DateTime scadenza;
 
-    // Stanze in cui l'evento NON può capitare (zona iniziale + Navetta, dove si parte)
+    // Stanze in cui l'evento NON può capitare (zona iniziale, Navetta e Sala Comandi)
     static readonly string[] stanzeEscluse = {
         "Navetta", "Porto di Sbarco", "Magazzino",
-        "Sala Motori Est 1", "Sala Motori Est 2", "Sala Ossigeno"
+        "Sala Motori Est 1", "Sala Motori Est 2", "Sala Ossigeno",
+        "Sala Comandi"
     };
 
     // Dialogo forzato mostrato quando l'evento scatta (PLACEHOLDER)

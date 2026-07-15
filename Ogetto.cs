@@ -149,16 +149,38 @@ class Strumento : Oggetto
 /// </summary>
 class IATascabile : Oggetto
 {
-    public IATascabile()
+    // Porta che l'IA è in grado di sbloccare e stanza in cui può farlo
+    public Porta? portaCollegata;
+    public string stanzaSblocco = "";
+
+    public IATascabile(Porta? portaCollegata = null, string stanzaSblocco = "")
     {
         this.nome = "IA Tascabile";
         this.descr = "Un piccolo dispositivo con un occhio luminoso. Sembra amichevole.";
         this.peso = 0.5f;
         this.mobile = true;
+        this.portaCollegata = portaCollegata;
+        this.stanzaSblocco = stanzaSblocco;
     }
 
     public override void Usa(Giocatore player)
     {
+        // Se siamo nella stanza giusta e la porta collegata è ancora chiusa,
+        // l'IA la sblocca; in tutti gli altri casi si limita a parlare
+        if (portaCollegata != null
+            && player.stanza!.nome == stanzaSblocco
+            && portaCollegata.stato != Porta.StatoPorta.Aperta)
+        {
+            Console.Clear();
+            Console.WriteLine("--- IA TASCABILE ---\n");
+            Console.WriteLine("\"*bzzt* Serratura elettronica rilevata. Lascia fare a me...\"");
+            portaCollegata.CambiaStato(Porta.StatoPorta.Aperta);
+            Console.WriteLine($"\nLa porta '{portaCollegata.nome}' ora è aperta!");
+            Console.WriteLine("\nPremi un tasto per continuare...");
+            Console.ReadKey(true);
+            return;
+        }
+
         Parla(player);
     }
 
