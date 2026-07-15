@@ -41,8 +41,38 @@ class Comando
                     Console.WriteLine("\nNon c'è nessuno con cui parlare qui. (Premi un tasto)");
                     Console.ReadKey(true);
                     break;
+
+                case "ESCAPE":
+                    if (MenuPausa(player)) return; // torna al menu principale
+                    break;
             }
         }
+    }
+
+    /// <summary>
+    /// Menu di pausa: salvataggio e uscita al menu principale.
+    /// Ritorna true se il giocatore vuole uscire dalla partita.
+    /// </summary>
+    private static bool MenuPausa(Giocatore player)
+    {
+        Menu menu = new Menu(
+            new[] { "Riprendi", "Salva Partita", "Salva ed Esci", "Esci senza Salvare" },
+            "PAUSA");
+
+        int scelta = menu.Selezione();
+
+        if (scelta == 1 || scelta == 2)
+        {
+            Console.Clear();
+            if (Salvataggio.Salva(player))
+                Console.WriteLine("\nPartita salvata!");
+            else
+                Console.WriteLine("\nSalvataggio non riuscito.");
+            Console.WriteLine("\nPremi un tasto per continuare...");
+            Console.ReadKey(true);
+        }
+
+        return scelta == 2 || scelta == 3;
     }
 
     /// <summary>
