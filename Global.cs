@@ -826,6 +826,42 @@ _MM_    _MM_      MMMMMMMM   YMMMM9
         // --- OGGETTI SUL PAVIMENTO ---
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
+
+        // Nota di Ryan nel Porto: introduce l'IA Tascabile e la meccanica delle backdoor
+        Oggetto notaRyan = new Oggetto("Nota di Ryan",
+@"
+Io ci ho provato in ogni modo a fermarla, ma era già troppo tardi.
+Gli altri non mi hanno voluto ascoltare: pensavano fossi pazzo.
+
+Se mai arriverà qualcuno, voglio dirti che tu sei l'unica speranza.
+Non per questa nave, che ormai è morta, ma per il mondo intero.
+
+L'intelligenza artificiale della nave è impazzita: ha ucciso tutto
+l'equipaggio (pace alle loro anime) e ora ha il completo controllo
+della nave.
+
+Vicino a questa nota avrai forse notato uno strano aggeggio: è
+un'IA tascabile, del tutto indipendente dall'IA principale della
+nave. L'ho costruita io, ingegnere informatico di bordo, per tentare
+di contrastare l'IA ormai fuori controllo. È stato inutile: era già
+diventata troppo potente. Ma sono certo che, nel momento del bisogno,
+se le parlerai riuscirà a salvarti la vita.
+
+Ho inserito una backdoor in molti terminali: da lì potrai prendere il
+controllo manuale delle porte e farti strada nella nave attraverso la
+rete locale dei computer.
+
+Per accedere alla backdoor dovrai far combaciare i buffer: avrai tre
+coppie di lettere e numeri e dovrai selezionare il buffer prima dalla
+riga, poi dalla colonna corrispondente e infine di nuovo dalla riga.
+Con un po' di pratica ci riuscirai.
+
+Non deludermi. Non lasciare che altre navi facciano la fine di questa.
+Credo in te.
+
+                                                              - Ryan", 0f, false);
+        porto.lista.Add(notaRyan);
+
         // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
         porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
 

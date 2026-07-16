@@ -21,15 +21,12 @@ class Terminale : Oggetto
     // (usato dal terminale della Sala Ossigeno durante l'evento dell'IA ostile)
     public bool sistemaOssigeno = false;
 
-    public string asciiArt = @"
-    d8'                    MP""""""`MM                                        MMP""""""YMM MP""""""`MM
-    d8'                     M  mmmmm..M                                        M' .mmm. `M M  mmmmm..M
-    d8'                      M.      `YM 88d888b. .d8888b. .d8888b. .d8888b.    M  MMMMM  M M.      `YM
-    d8'                       MMMMMMM.  M 88'  `88 88'  `88 88'  `"""" 88ooood8    M  MMMMM  M MMMMMMM.  M
-    d8'                        M. .MMM'  M 88.  .88 88.  .88 88.  ... 88.  ...    M. `MMM' .M M. .MMM'  M
-    88                          Mb.     .dM 88Y888P' `88888P8 `88888P' `88888P'    MMb     dMM Mb.     .dM
-    oooooooooooo       MMMMMMMMMMM 88                                     MMMMMMMMMMM MMMMMMMMMMM
-    dP                                                                 ";
+    public string asciiArt =
+@"
+==============================================
+             TERMINALE  DI  SISTEMA
+                >>  ACCESSO  <<
+==============================================";
 
     public Terminale(string nome, string descr, StatoTerminale stato, string password)
     {
