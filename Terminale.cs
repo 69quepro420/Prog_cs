@@ -23,10 +23,20 @@ class Terminale : Oggetto
 
     public string asciiArt =
 @"
-==============================================
-             TERMINALE  DI  SISTEMA
-                >>  ACCESSO  <<
-==============================================";
+  ____
+ 6MMMMb\
+6M'    `
+MM      __ ____      ___     ____     ____           _____     ____
+YM.     `M6MMMMb   6MMMMb   6MMMMb.  6MMMMb         6MMMMMb   6MMMMb\
+ YMMMMb  MM'  `Mb 8M'  `Mb 6M'   Mb 6M'  `Mb       6M'   `Mb MM'    `
+     `Mb MM    MM     ,oMM MM    `' MM    MM       MM     MM YM.
+      MM MM    MM ,6MM9'MM MM       MMMMMMMM       MM     MM  YMMMMb
+      MM MM    MM MM'   MM MM       MM             MM     MM      `Mb
+L    ,M9 MM.  ,M9 MM.  ,MM YM.   d9 YM    d9       YM.   ,M9 L    ,MM
+MYMMMM9  MMYMMM9  `YMMM9'Yb.YMMMM9   YMMMM9         YMMMMM9  MYMMMM9
+         MM
+         MM
+        _MM_";
 
     public Terminale(string nome, string descr, StatoTerminale stato, string password)
     {

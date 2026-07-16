@@ -764,9 +764,9 @@ class Global
         // nascono in stato Bloccata (vedi sezione 3 per le porte).
 
         // --- OGGETTI CHIAVE (componenti della navetta: usali nella Navetta per vincere) ---
-        OggettoChiave carburatoreSonico = new OggettoChiave("Carburatore Sonico", "Un componente vitale della navetta. Vibra leggermente.", 2.5f);
-        OggettoChiave iniettoreCarburante = new OggettoChiave("Iniettore di Carburante", "Un componente della navetta. Puzza di cherosene.", 2.5f);
-        OggettoChiave antimateriaNeurale = new OggettoChiave("Antimateria Neurale", "Il nucleo energetico della navetta. Emana un bagliore inquietante.", 2.5f);
+        OggettoChiave carburatoreSonico = new OggettoChiave("Turbopompa Primaria", "Un componente vitale della navetta. Vibra leggermente.", 2.5f);
+        OggettoChiave iniettoreCarburante = new OggettoChiave("Turbopompa Secondaria", "Un componente della navetta. Puzza di cherosene.", 2.5f);
+        OggettoChiave antimateriaNeurale = new OggettoChiave("Ugello", "Il componente terminale del propulsore della navetta.", 2.5f);
 
         // --- STRUMENTI (aprono una porta se usati nella stanza giusta) ---
         Strumento piedeDiPorco = new Strumento("Piede di Porco", "Una robusta leva d'acciaio. Perfetta per forzare porte.", 3f,
@@ -794,7 +794,7 @@ class Global
         Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", null, Cassa.StatoCassa.Bloccata);
         salaMedica.lista.Add(cassaMedica);
 
-        // Cassa in Ripostiglio - SBLOCCATA: contiene l'Iniettore di Carburante (chiave 2)
+        // Cassa in Ripostiglio - SBLOCCATA: contiene la Turbopompa Secondaria (chiave 2)
         Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", iniettoreCarburante, Cassa.StatoCassa.Sbloccata);
         ripostiglio.lista.Add(cassaRipostiglio);
 
@@ -915,7 +915,7 @@ Credo in te.
         ryan = new Personaggio("Ryan",
             "Un membro dell'equipaggio, ferito e allo stremo delle forze.",
             "\"Aaah... la ferita... fa un male cane... ti prego... trova qualcosa per il dolore...\" (PLACEHOLDER)",
-            "Ryan giace immobile. È morto: non risponde più.",
+            $"Ti inginocchi accanto al corpo di Ryan. Ripensi alle sue ultime parole: la password del terminale del corridoio centrale era {terminaleCorrCentraleS.password}.",
             "Ryan giace ferito a terra. Premi [T] per parlargli.");
 
         // Gli Antidolorifici nella cassa medica: somministrati a Ryan rivelano
