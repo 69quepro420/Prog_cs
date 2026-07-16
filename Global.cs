@@ -794,13 +794,12 @@ class Global
         Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", null, Cassa.StatoCassa.Bloccata);
         salaMedica.lista.Add(cassaMedica);
 
-        // Cassa in Ripostiglio - SBLOCCATA: non collegata a nessun terminale
-        Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", new Oggetto("Nota Cartacea", "C'è scritto: 'Password terminali di servizio: 1234'.", 0.1f, true), Cassa.StatoCassa.Sbloccata);
+        // Cassa in Ripostiglio - SBLOCCATA: contiene l'Iniettore di Carburante (chiave 2)
+        Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", iniettoreCarburante, Cassa.StatoCassa.Sbloccata);
         ripostiglio.lista.Add(cassaRipostiglio);
 
         // --- OGGETTI SUL PAVIMENTO ---
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
-        ripostiglio.lista.Add(iniettoreCarburante);   // Ripostiglio
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
         // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
         porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
@@ -831,9 +830,9 @@ class Global
         terminaleArchivio.casseControllate.Add(cassaArchivio);
         archivio.lista.Add(terminaleArchivio);
 
-        // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "1234", nota nella cassa del ripostiglio)
+        // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "9832", rivelata solo da Ryan)
         // -> porta Corridoio Centrale Nord-Sala Comandi
-        Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "9832");
         terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
         terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
         corrCentraleS.lista.Add(terminaleCorrCentraleS);
