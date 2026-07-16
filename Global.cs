@@ -798,6 +798,31 @@ class Global
         Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", iniettoreCarburante, Cassa.StatoCassa.Sbloccata);
         ripostiglio.lista.Add(cassaRipostiglio);
 
+        // --- INDIZIO PASSWORD DEL TERMINALE DI SALA MOTORI EST 2 (in Sala Ossigeno) ---
+        // La scritta sul muro disegna "H2O": H=8, 2, O=15 -> password "8215".
+        string asciiH2O = @"
+____    ____                  ____
+`MM'    `MM'                 6MMMMb
+ MM      MM                 8P    Y8
+ MM      MM         ____   6M      Mb
+ MM      MM        6MMMMb  MM      MM
+ MMMMMMMMMM       MM'  `Mb MM      MM
+ MM      MM            ,MM MM      MM
+ MM      MM           ,MM' MM      MM
+ MM      MM         ,M'    YM      M9
+ MM      MM       ,M'       8b    d8
+_MM_    _MM_      MMMMMMMM   YMMMM9
+";
+        Oggetto scrittaMuro = new Oggetto("Scritta sul muro vicino a un tubo", asciiH2O, 0f, false);
+        salaOssigeno.lista.Add(scrittaMuro);
+
+        Oggetto notaOssigeno = new Oggetto("Nota appuntata",
+            "Ricordati che il computer di sala motori accetta soltanto numeri, quindi non " +
+            "ribloccarmi il computer di nuovo perché devo lavorarci, Pier. Quante volte dovrò " +
+            "ricordartelo.. P.S. se non ti ricordi la password come le ultime due volte, non " +
+            "perdere tempo a disturbarmi: è scritta sul muro.", 0f, false);
+        salaOssigeno.lista.Add(notaOssigeno);
+
         // --- OGGETTI SUL PAVIMENTO ---
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
@@ -812,8 +837,9 @@ class Global
         terminaleMagazzino.porteControllate.Add(portaMagazzinoMotoriEst1);
         magazzino.lista.Add(terminaleMagazzino);
 
-        // TERMINALE SALA MOTORI EST 2: BLOCCATO (password "1234") -> porta Sala Motori Est 2-Corridoio Est Sud
-        Terminale terminaleMotoriEst2 = new Terminale("Terminale di Sala Motori Est 2", "Un terminale di manutenzione bloccato da password.", StatoTerminale.Bloccato, "1234");
+        // TERMINALE SALA MOTORI EST 2: BLOCCATO (password "8215": H=8, 2, O=15, dalla
+        // scritta "H2O" sul muro della Sala Ossigeno) -> porta Sala Motori Est 2-Corridoio Est Sud
+        Terminale terminaleMotoriEst2 = new Terminale("Terminale di Sala Motori Est 2", "Un terminale di manutenzione bloccato da password.", StatoTerminale.Bloccato, "8215");
         terminaleMotoriEst2.logs.Add("PLACEHOLDER");
         terminaleMotoriEst2.porteControllate.Add(portaMotoriEst2CorrEstSud);
         motoriEst2.lista.Add(terminaleMotoriEst2);
