@@ -39,6 +39,10 @@ class Comando
                     player.MostraMappa();
                     break;
 
+                case "H":
+                    Aiuto(player);
+                    break;
+
                 case "C":
                     CercaOggetti(player);
                     break;
@@ -123,6 +127,32 @@ class Comando
     }
 
     /// <summary>
+    /// Tasto [H]: comando di aiuto. Mostra l'elenco dei comandi e l'obiettivo
+    /// corrente per supportare il giocatore.
+    /// </summary>
+    private static void Aiuto(Giocatore player)
+    {
+        Console.Clear();
+        Console.WriteLine("=== AIUTO / COMANDI ===\n");
+        Console.WriteLine(" [W] [A] [S] [D]  Muoviti tra le stanze (Nord / Ovest / Sud / Est)");
+        Console.WriteLine(" [C]             Cerca e interagisci con gli oggetti nella stanza");
+        Console.WriteLine(" [E]             Apri l'inventario (gestione a pila, LIFO)");
+        Console.WriteLine(" [T]             Parla con chi è presente o con l'IA Tascabile");
+        Console.WriteLine(" [M]             Mostra la mappa della nave");
+        Console.WriteLine(" [H]             Mostra questo aiuto");
+        Console.WriteLine(" [ESC]           Pausa: salva la partita o esci");
+        Console.WriteLine("\n=== OBIETTIVO ===\n");
+        Console.WriteLine(" La navetta è rotta: recupera i 3 componenti chiave sparsi per");
+        Console.WriteLine(" la stazione e installali nella Navetta per fuggire.");
+        Console.WriteLine($" Componenti installati finora: {Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali}");
+        Console.WriteLine("\n Se una porta è bloccata, prova ad attraversarla: il messaggio");
+        Console.WriteLine(" che compare ti suggerisce quale oggetto serve. Tieni con te");
+        Console.WriteLine(" l'IA Tascabile e parlaci: può darti indizi preziosi.");
+        Console.WriteLine("\nPremi un tasto per tornare all'HUD...");
+        Console.ReadKey(true);
+    }
+
+    /// <summary>
     /// Tasto [T]: parla con il personaggio presente nella stanza e/o con
     /// l'IA Tascabile, se è nell'inventario. Se entrambi sono disponibili,
     /// il giocatore sceglie con chi parlare.
@@ -159,6 +189,7 @@ class Comando
     /// </summary>
     private static void SchermataSconfitta(Giocatore player)
     {
+        Logger.Log("FINE PARTITA: sconfitta per ossigeno esaurito.");
         Console.Clear();
         Console.WriteLine("===========================================================");
         Console.WriteLine("                   OSSIGENO ESAURITO                       ");
@@ -199,6 +230,7 @@ class Comando
     /// </summary>
     private static void FinaleFugaAutodistruzione(Giocatore player)
     {
+        Logger.Log("FINE PARTITA: vittoria (fuga con autodistruzione, IA distrutta).");
         Console.Clear();
         Console.WriteLine("===========================================================");
         Console.WriteLine("                    FUGA ALL'ULTIMO SECONDO                ");
@@ -221,6 +253,7 @@ class Comando
     /// </summary>
     private static void FinaleMorteAutodistruzione(Giocatore player)
     {
+        Logger.Log("FINE PARTITA: sconfitta (morte a bordo durante l'autodistruzione).");
         Console.Clear();
         Console.WriteLine("===========================================================");
         Console.WriteLine("                      SACRIFICIO FINALE                    ");
@@ -243,6 +276,7 @@ class Comando
     /// </summary>
     private static void FinaleIAViva(Giocatore player)
     {
+        Logger.Log("FINE PARTITA: fuga lasciando l'IA viva.");
         Console.Clear();
         Console.WriteLine("===========================================================");
         Console.WriteLine("                     FUGA NELL'OMBRA                       ");
@@ -363,6 +397,7 @@ class Comando
             {
                 player.inventario.Push(oggettoSelezionato);
                 player.stanza.lista.RemoveAt(scelta);
+                Logger.Log($"Oggetto raccolto: '{oggettoSelezionato.nome}'.");
                 Console.WriteLine($"\nHai preso {oggettoSelezionato.nome} e lo hai messo nell'inventario!");
             }
         }

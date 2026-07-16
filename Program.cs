@@ -6,6 +6,10 @@ class Program
 {
     static void Main(string[] args)
     {
+        // 0. Avvio: logging e lettura del file di configurazione esterno
+        Logger.Log("=== Avvio del gioco ===");
+        Config.Carica();
+
         // 1. Introduzione testuale (saltabile con un tasto)
         AnimazioneIntro.Gioca();
 
@@ -22,6 +26,7 @@ class Program
             {
                 Giocatore player = new Giocatore(ChiediNome());
                 Global.Inizializza(player);
+                Logger.Log($"Nuova partita avviata. Giocatore: {player.nome}.");
                 Comando.Start(player);
             }
             else if (scelta == 1) // Carica Partita
@@ -32,9 +37,10 @@ class Program
                     continue;
                 }
 
-                Giocatore player = new Giocatore("Comandante");
+                Giocatore player = new Giocatore(Config.nomeDefault);
                 if (Salvataggio.Carica(player))
                 {
+                    Logger.Log($"Partita caricata. Giocatore: {player.nome}.");
                     Comando.Start(player);
                 }
                 else
@@ -44,6 +50,7 @@ class Program
             }
             else // Esci (o ESC)
             {
+                Logger.Log("=== Uscita dal gioco ===");
                 Console.Clear();
                 return;
             }
@@ -60,10 +67,10 @@ class Program
         {
             Console.Clear();
             Console.WriteLine("=== NUOVA PARTITA ===\n");
-            Console.Write("Inserisci il tuo nome (max 20 caratteri, invio per 'Comandante'): ");
+            Console.Write($"Inserisci il tuo nome (max 20 caratteri, invio per '{Config.nomeDefault}'): ");
             string? input = Console.ReadLine()?.Trim();
 
-            if (string.IsNullOrEmpty(input)) return "Comandante";
+            if (string.IsNullOrEmpty(input)) return Config.nomeDefault;
             if (input.Length <= 20) return input;
 
             Mostra("Nome troppo lungo, massimo 20 caratteri.");

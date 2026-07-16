@@ -11,7 +11,7 @@ namespace Project;
 /// </summary>
 static class EventoIA
 {
-    public const int durataSecondi = 120;
+    public static int durataSecondi = 120; // impostato dal file di configurazione
 
     public static string stanzaEvento = "";
     public static bool attivo = false;    // il dialogo è avvenuto e il timer è partito
@@ -63,9 +63,48 @@ static class EventoIA
         if (attivo || risolto || fallito) return;
         if (player.stanza!.nome != stanzaEvento) return;
 
+        Logger.Log($"Evento IA ostile scattato nella stanza '{stanzaEvento}'.");
         AnimazioneIntro.MostraDialogo(dialogo);
         attivo = true;
         scadenza = DateTime.Now.AddSeconds(durataSecondi);
+
+        // Teletrasporto: l'IA disorienta il giocatore spostandolo in una
+        // stanza già visitata (scelta a caso).
+        Teletrasporta(player);
+    }
+
+    /// <summary>
+    /// Teletrasporta il giocatore in una stanza già visitata, scelta a caso
+    /// (diversa da quella attuale). Se non ce ne sono, non fa nulla.
+    /// </summary>
+    static void Teletrasporta(Giocatore player)
+    {
+        List<(Stanza stanza, int r, int c)> visitate = new();
+        for (int r = 0; r < Global.map.Length; r++)
+        {
+            for (int c = 0; c < Global.map[r].Length; c++)
+            {
+                Stanza? s = Global.map[r][c];
+                if (s != null && s.visitata && s != player.stanza)
+                    visitate.Add((s, r, c));
+            }
+        }
+
+        if (visitate.Count == 0) return;
+
+        var scelta = visitate[Random.Shared.Next(visitate.Count)];
+        player.stanza = scelta.stanza;
+        player.coordinate = new[] { scelta.r, scelta.c };
+        Logger.Log($"Teletrasporto: il giocatore è stato spostato in '{scelta.stanza.nome}'.");
+
+        Console.Clear();
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("                  SEGNALE DISTORTO                         ");
+        Console.WriteLine("===========================================================");
+        Console.WriteLine("\nUn lampo acceca la tua vista... quando ti riprendi, ti");
+        Console.WriteLine($"ritrovi in un'altra parte della nave: {scelta.stanza.nome}.");
+        Console.WriteLine("\nPremi un tasto per continuare...");
+        Console.ReadKey(true);
     }
 
     /// <summary>Secondi che mancano allo scadere del timer (0 se non attivo).</summary>
@@ -88,7 +127,11 @@ static class EventoIA
     /// </summary>
     public static bool ControllaScadenza()
     {
-        if (TimerAttivo && DateTime.Now >= scadenza) fallito = true;
+        if (TimerAttivo && DateTime.Now >= scadenza)
+        {
+            fallito = true;
+            Logger.Log("Evento IA ostile: ossigeno esaurito, partita persa.");
+        }
         return fallito;
     }
 
@@ -96,6 +139,7 @@ static class EventoIA
     public static void RipristinaOssigeno()
     {
         risolto = true;
+        Logger.Log("Ossigeno ripristinato dal terminale: emergenza rientrata.");
     }
 
     /// <summary>Ripristina lo stato dell'evento da un salvataggio.</summary>

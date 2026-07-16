@@ -12,7 +12,7 @@ static class EventoFinale
 {
     public enum Scelta { Nessuna, Autodistruzione, LasciaIAViva }
 
-    public const int durataSecondi = 60;
+    public static int durataSecondi = 60; // impostato dal file di configurazione
 
     public static bool dialogoFatto = false;
     public static Scelta scelta = Scelta.Nessuna;
@@ -62,9 +62,10 @@ static class EventoFinale
             autodistruzione = true;
             scadenza = DateTime.Now.AddSeconds(durataSecondi);
 
+            Logger.Log("Finale: scelta AUTODISTRUZIONE.");
             Console.Clear();
             Console.WriteLine("===========================================================");
-            Console.WriteLine("           AUTODISTRUZIONE AVVIATA - 60 SECONDI            ");
+            Console.WriteLine($"       AUTODISTRUZIONE AVVIATA - {durataSecondi} SECONDI       ");
             Console.WriteLine("===========================================================");
             Console.WriteLine("\nCorri alla navetta e installa i 3 componenti per fuggire!");
             Console.WriteLine("\nPremi un tasto per continuare...");
@@ -73,6 +74,7 @@ static class EventoFinale
         else
         {
             scelta = Scelta.LasciaIAViva;
+            Logger.Log("Finale: scelta LASCIA IA VIVA.");
         }
     }
 
