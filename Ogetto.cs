@@ -16,10 +16,8 @@ class Oggetto
     /// </summary>
     public virtual bool Consumato => false;
 
-    // --- 1. COSTRUTTORE VUOTO (Risolve l'errore del Terminale CS7036) ---
     public Oggetto() { }
 
-    // --- 2. COSTRUTTORE CON PARAMETRI (Risolve l'errore dell'oggetto di test precedente) ---
     public Oggetto(string nome, string descr, float peso, bool mobile)
     {
         this.nome = nome;

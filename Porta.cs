@@ -39,11 +39,11 @@ class Porta
     {
         return stato switch
         {
-            StatoPorta.Aperta => "",  // Passaggio libero, nessun messaggio
+            StatoPorta.Aperta => "",
             StatoPorta.Bloccata => string.IsNullOrEmpty(messaggioBloccata)
-                ? $"\n⛔ La porta '{nome}' è bloccata. Non puoi passare."
-                : $"\n⛔ {messaggioBloccata}",
-            StatoPorta.Rotta => $"\n🔨 La porta '{nome}' è rotta. Non esiste alcun modo per passare.",
+                ? $"\nLa porta '{nome}' è bloccata. Non puoi passare."
+                : $"\n{messaggioBloccata}",
+            StatoPorta.Rotta => $"\nLa porta '{nome}' è rotta. Non esiste alcun modo per passare.",
             _ => "Errore sconosciuto"
         };
     }

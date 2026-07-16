@@ -71,8 +71,8 @@ class Comando
     /// </summary>
     private static bool GestisciFinePartita(Giocatore player)
     {
-        // 1. Vittoria: i 3 componenti sono installati nella navetta.
-        //    Ha priorità: se sei fuggito in tempo, i timer non contano più.
+        // Vittoria: i 3 componenti installati nella navetta hanno la priorità
+        // sui timer (se sei fuggito in tempo, non contano più).
         if (Global.partitaVinta)
         {
             if (EventoFinale.scelta == EventoFinale.Scelta.Autodistruzione)
@@ -84,14 +84,14 @@ class Comando
             return true;
         }
 
-        // 2. Morte per esaurimento ossigeno
+        // Morte per esaurimento ossigeno
         if (EventoIA.ControllaScadenza())
         {
             SchermataSconfitta(player);
             return true;
         }
 
-        // 3. Morte a bordo per autodistruzione
+        // Morte a bordo per autodistruzione
         if (EventoFinale.ControllaScadenza())
         {
             FinaleMorteAutodistruzione(player);
@@ -436,7 +436,7 @@ class Comando
         Console.Clear();
         Stack<Oggetto> appoggio = new Stack<Oggetto>();
 
-        // 1. Estraiamo gli oggetti sovrastanti uno a uno
+        // Estraiamo gli oggetti sovrastanti uno a uno
         Console.WriteLine("Avvio procedura di estrazione LIFO...");
         for (int i = 0; i < sceltOggetto; i++)
         {
@@ -445,7 +445,7 @@ class Comando
             appoggio.Push(estratto);
         }
 
-        // 2. Ora l'oggetto che vogliamo è in cima alla pila. Lo prendiamo (Pop).
+        // Ora l'oggetto che vogliamo è in cima alla pila. Lo prendiamo (Pop).
         Oggetto oggettoTarget = player.inventario.Pop();
 
         // Eseguiamo l'azione
@@ -465,11 +465,11 @@ class Comando
             player.stanza!.lista.Add(oggettoTarget);
         }
 
-        // 3. Reinseriamo l'oggetto Target nell'inventario
+        // Reinseriamo l'oggetto Target nell'inventario
         //    (a meno che non sia stato scartato o consumato dall'uso)
         if (sceltaAzione != 2 && !oggettoTarget.Consumato) player.inventario.Push(oggettoTarget);
 
-        // 4. Reinseriamo gli oggetti temporanei mantenendo l'ordine originario
+        // Reinseriamo gli oggetti temporanei mantenendo l'ordine originario
         Console.WriteLine("\nReinserimento oggetti nella Pila...");
         while (appoggio.Count > 0)
         {

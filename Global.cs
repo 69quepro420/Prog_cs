@@ -52,9 +52,7 @@ class Global
         componentiNavettaInstallati = 0;
         partitaVinta = false;
 
-        // ====================================================================
-        // 1. MAPPE CON CARATTERI FILLER (PUNTINI STELLARI) PER BLOCCARE L'ALLINEAMENTO
-        // ====================================================================
+        // Mappe ASCII di ogni stanza (i puntini fanno da riempimento per l'allineamento)
 
         string mapSComandi = @"
         .............................../^\
@@ -615,9 +613,7 @@ class Global
         .........................'-------------'";
 
 
-        // ====================================================================
-        // 2. CREAZIONE DELLE STANZE CON LA MAPPA CORRISPONDENTE
-        // ====================================================================
+        // Creazione delle stanze
         Stanza salaComandi = new Stanza("Sala Comandi", "Il ponte di comando della nave. Un'enorme vetrata mostra lo spazio siderale.", mapSComandi);
 
         Stanza corrOvestN = new Stanza("Corridoio Ovest (Nord)", "La parte nord del corridoio di babordo.", mapONord);
@@ -641,127 +637,100 @@ class Global
         Stanza porto = new Stanza("Porto di Sbarco", "La camera di compensazione e attracco navette.", mapPorto);
         Stanza navetta = new Stanza("Navetta", "Il veicolo con cui siete arrivati. I motori sono spenti.", mapNavetta);
         
-        // ====================================================================
-        // 3. CONFIGURAZIONE DELLE PORTE - SECONDO LO SCHEMA SPECIFICATO
-        // ====================================================================
-        
-        // SCHEMA COLLEGAMENTI STANZE:
-        // ✅ 12 Collegamenti tra Stanze Normali:
-        //    - Navetta ↔ Porto
-        //    - Porto ↔ Magazzino
-        //    - Magazzino ↔ Sala Motori Ovest (portaOvest)
-        //    - Magazzino ↔ Sala Motori Est (portaEst)
-        //    - Sala Motori Est 1 ↔ Sala Ossigeno
-        //    - Sala Motori Est 2 ↔ Corridoio Est Sud
-        //    - Corridoio Est Nord ↔ Archivio
-        //    - Corridoio Centrale Nord ↔ Ripostiglio
-        //    - Ripostiglio ↔ Corridoio Ovest Nord
-        //    - Corridoio Ovest Sud ↔ Sala Medica
-        //    - Corridoio Centrale Nord ↔ Sala Comandi
-        //    - Archivio ↔ Corridoio Centrale Nord
-        //
-        // ✅ 5 Collegamenti tra Stanze Lunghe:
-        //    - Sala Motori Ovest 1 ↔ Sala Motori Ovest 2
-        //    - Sala Motori Est 1 ↔ Sala Motori Est 2
-        //    - Corridoio Est Nord ↔ Corridoio Est Sud
-        //    - Corridoio Centrale Nord ↔ Corridoio Centrale Sud
-        //    - Corridoio Ovest Nord ↔ Corridoio Ovest Sud
+        // Porte tra le stanze
 
-        // Navetta ↔ Porto
+        // Navetta - Porto
         Porta portaNavettaPorto = new Porta("Porta Navetta-Porto", Porta.StatoPorta.Aperta);
         navetta.portaNord = portaNavettaPorto;
         porto.portaSud = portaNavettaPorto;
 
-        // Porto ↔ Magazzino - BLOCCATA: si apre usando l'IA Tascabile nel Porto
+        // Porto - Magazzino - BLOCCATA: si apre usando l'IA Tascabile nel Porto
         Porta portaPortoMagazzino = new Porta("Porta Porto-Magazzino", Porta.StatoPorta.Bloccata,
             "Accanto alla porta noti un foro USB per l'ingresso di un dispositivo.");
         porto.portaNord = portaPortoMagazzino;
         magazzino.portaSud = portaPortoMagazzino;
 
-        // Magazzino ↔ Sala Motori Ovest 2 (portaOvest) - BLOCCATA: si apre col Piede di Porco usato in Magazzino
+        // Magazzino - Sala Motori Ovest 2 (portaOvest) - BLOCCATA: si apre col Piede di Porco usato in Magazzino
         Porta portaMagazzinoMotoriOvest2 = new Porta("Porta Magazzino-Sala Motori Ovest 2", Porta.StatoPorta.Bloccata,
             "La porta elettronica si è bloccata. Forse si potrebbe forzare con l'attrezzo giusto.");
         magazzino.portaOvest = portaMagazzinoMotoriOvest2;
         motoriOvest2.portaEst = portaMagazzinoMotoriOvest2;
 
-        // Magazzino ↔ Sala Motori Est 1 (portaEst) - BLOCCATA: controllata dal Terminale di Magazzino
+        // Magazzino - Sala Motori Est 1 (portaEst) - BLOCCATA: controllata dal Terminale di Magazzino
         Porta portaMagazzinoMotoriEst1 = new Porta("Porta Magazzino-Sala Motori Est 1", Porta.StatoPorta.Bloccata);
         magazzino.portaEst = portaMagazzinoMotoriEst1;
         motoriEst1.portaOvest = portaMagazzinoMotoriEst1;
 
-        // Sala Motori Est 1 ↔ Sala Ossigeno
+        // Sala Motori Est 1 - Sala Ossigeno
         Porta portaMotoriEst1SalaOssigeno = new Porta("Porta Sala Motori Est 1-Sala Ossigeno", Porta.StatoPorta.Aperta);
         motoriEst1.portaNord = portaMotoriEst1SalaOssigeno;
         salaOssigeno.portaSud = portaMotoriEst1SalaOssigeno;
 
-        // Sala Motori Est 2 ↔ Corridoio Est Sud - BLOCCATA: controllata dal Terminale di Sala Motori Est 2
+        // Sala Motori Est 2 - Corridoio Est Sud - BLOCCATA: controllata dal Terminale di Sala Motori Est 2
         Porta portaMotoriEst2CorrEstSud = new Porta("Porta Sala Motori Est 2-Corridoio Est Sud", Porta.StatoPorta.Bloccata);
         motoriEst2.portaNord = portaMotoriEst2CorrEstSud;
         corrEstS.portaSud = portaMotoriEst2CorrEstSud;
 
-        // Corridoio Est Nord ↔ Archivio
+        // Corridoio Est Nord - Archivio
         Porta portaCorrEstNordArchivio = new Porta("Porta Corridoio Est Nord-Archivio", Porta.StatoPorta.Aperta);
         corrEstN.portaOvest = portaCorrEstNordArchivio;
         archivio.portaEst = portaCorrEstNordArchivio;
 
-        // Corridoio Centrale Nord ↔ Ripostiglio
+        // Corridoio Centrale Nord - Ripostiglio
         Porta portaCorrCentraleNRipostiglio = new Porta("Porta Corridoio Centrale Nord-Ripostiglio", Porta.StatoPorta.Aperta);
         corrCentraleN.portaOvest = portaCorrCentraleNRipostiglio;
         ripostiglio.portaEst = portaCorrCentraleNRipostiglio;
 
-        // Ripostiglio ↔ Corridoio Ovest Nord
+        // Ripostiglio - Corridoio Ovest Nord
         Porta portaRipostCorrOvestNord = new Porta("Porta Ripostiglio-Corridoio Ovest Nord", Porta.StatoPorta.Aperta);
         ripostiglio.portaOvest = portaRipostCorrOvestNord;
         corrOvestN.portaEst = portaRipostCorrOvestNord;
 
-        // Corridoio Ovest Sud ↔ Sala Medica - BLOCCATA: si apre col Martello di Emergenza usato in Corridoio Ovest Sud
+        // Corridoio Ovest Sud - Sala Medica - BLOCCATA: si apre col Martello di Emergenza usato in Corridoio Ovest Sud
         Porta portaCorrOvestSudSalaMedica = new Porta("Porta Corridoio Ovest Sud-Sala Medica", Porta.StatoPorta.Bloccata,
             "Delle lamiere contorte bloccano il passaggio. Bisognerebbe sfondarle per entrare.");
         corrOvestS.portaEst = portaCorrOvestSudSalaMedica;
         salaMedica.portaOvest = portaCorrOvestSudSalaMedica;
 
-        // Corridoio Centrale Nord ↔ Sala Comandi - BLOCCATA: controllata dal Terminale in Corridoio Centrale Sud
+        // Corridoio Centrale Nord - Sala Comandi - BLOCCATA: controllata dal Terminale in Corridoio Centrale Sud
         Porta portaCorrCentraleNSalaComandi = new Porta("Porta Corridoio Centrale Nord-Sala Comandi", Porta.StatoPorta.Bloccata);
         corrCentraleN.portaNord = portaCorrCentraleNSalaComandi;
         salaComandi.portaSud = portaCorrCentraleNSalaComandi;
 
-        // Archivio ↔ Corridoio Centrale Nord - BLOCCATA: controllata dal Terminale di Sala Motori Ovest
+        // Archivio - Corridoio Centrale Nord - BLOCCATA: controllata dal Terminale di Sala Motori Ovest
         Porta portaArchivioCorriCentraleN = new Porta("Porta Archivio-Corridoio Centrale Nord", Porta.StatoPorta.Bloccata);
         archivio.portaOvest = portaArchivioCorriCentraleN;
         corrCentraleN.portaEst = portaArchivioCorriCentraleN;
 
         // CORRIDOI LUNGHI (5 collegamenti)
         
-        // Sala Motori Ovest 1 ↔ Sala Motori Ovest 2
+        // Sala Motori Ovest 1 - Sala Motori Ovest 2
         Porta portaMotoriOvest1Ovest2 = new Porta("Porta Sala Motori Ovest 1-2", Porta.StatoPorta.Aperta);
         motoriOvest1.portaEst = portaMotoriOvest1Ovest2;
         motoriOvest2.portaOvest = portaMotoriOvest1Ovest2;
 
-        // Sala Motori Est 1 ↔ Sala Motori Est 2
+        // Sala Motori Est 1 - Sala Motori Est 2
         Porta portaMotoriEst1Est2 = new Porta("Porta Sala Motori Est 1-2", Porta.StatoPorta.Aperta);
         motoriEst1.portaEst = portaMotoriEst1Est2;
         motoriEst2.portaOvest = portaMotoriEst1Est2;
 
-        // Corridoio Est Nord ↔ Corridoio Est Sud
+        // Corridoio Est Nord - Corridoio Est Sud
         Porta portaCorrEstNordSud = new Porta("Porta Corridoio Est Nord-Sud", Porta.StatoPorta.Aperta);
         corrEstN.portaSud = portaCorrEstNordSud;
         corrEstS.portaNord = portaCorrEstNordSud;
 
-        // Corridoio Centrale Nord ↔ Corridoio Centrale Sud
+        // Corridoio Centrale Nord - Corridoio Centrale Sud
         Porta portaCorrCentraleNordSud = new Porta("Porta Corridoio Centrale Nord-Sud", Porta.StatoPorta.Aperta);
         corrCentraleN.portaSud = portaCorrCentraleNordSud;
         corrCentraleS.portaNord = portaCorrCentraleNordSud;
 
-        // Corridoio Ovest Nord ↔ Corridoio Ovest Sud
+        // Corridoio Ovest Nord - Corridoio Ovest Sud
         Porta portaCorrOvestNordSud = new Porta("Porta Corridoio Ovest Nord-Sud", Porta.StatoPorta.Aperta);
         corrOvestN.portaSud = portaCorrOvestNordSud;
         corrOvestS.portaNord = portaCorrOvestNordSud;
 
-        // ====================================================================
-        // 4. CASSE E TERMINALI (RETE LOCALE)
-        // ====================================================================
-        // REGOLA: tutte le porte e le casse collegate a un terminale
-        // nascono in stato Bloccata (vedi sezione 3 per le porte).
+        // Casse, terminali e oggetti.
+        // Le porte e le casse collegate a un terminale nascono bloccate.
 
         // --- OGGETTI CHIAVE (componenti della navetta: usali nella Navetta per vincere) ---
         OggettoChiave carburatoreSonico = new OggettoChiave("Turbopompa Primaria", "Un componente vitale della navetta. Vibra leggermente.", 2.5f);
@@ -931,9 +900,7 @@ Credo in te.
             "",
             "Un occhio rosso ti scruta da ogni telecamera: l'IA Ostile è qui. Premi [T] per parlare.");
 
-        // ====================================================================
-        // 5. INSERIMENTO NELLA GRIGLIA LOGICA (6 Righe, 5 Colonne)
-        // ====================================================================
+        // Griglia logica della mappa (6 righe, 5 colonne)
         map = new Stanza[][] {
             /* Riga 0 */ new Stanza[] { null, null, salaComandi, null, null },
             /* Riga 1 */ new Stanza[] { corrOvestN, ripostiglio, corrCentraleN, archivio, corrEstN },
@@ -943,7 +910,7 @@ Credo in te.
             /* Riga 5 */ new Stanza[] { null, null, navetta, null, null }
         };
 
-        // Oggetto iniziale di test
+        // Oggetto iniziale nell'inventario
         player.inventario.Push(new Oggetto("Chiave Inglese", "Pesante e arrugginita.", 1.5f, true));
 
         // Partiamo dalla navetta (Riga 5, Colonna 2)
