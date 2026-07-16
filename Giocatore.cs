@@ -106,10 +106,7 @@ class Giocatore
 
         if (stanza.personaggio != null)
         {
-            if (stanza.personaggio.vivo)
-                Console.WriteLine($"{stanza.personaggio.nome} giace ferito a terra. Premi [T] per parlargli.");
-            else
-                Console.WriteLine($"Il corpo senza vita di {stanza.personaggio.nome} giace a terra.");
+            Console.WriteLine(stanza.personaggio.RigaPresenza());
         }
         Console.WriteLine();
     }
