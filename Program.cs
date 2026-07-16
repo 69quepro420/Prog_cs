@@ -6,14 +6,14 @@ class Program
 {
     static void Main(string[] args)
     {
-        // 0. Avvio: logging e lettura del file di configurazione esterno
+        // Avvio: logging e lettura del file di configurazione esterno
         Logger.Log("=== Avvio del gioco ===");
         Config.Carica();
 
-        // 1. Introduzione testuale (saltabile con un tasto)
+        // Introduzione testuale (saltabile con un tasto)
         AnimazioneIntro.Gioca();
 
-        // 2. Menu principale
+        // Menu principale
         while (true)
         {
             Menu menuPrincipale = new Menu(

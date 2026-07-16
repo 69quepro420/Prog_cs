@@ -144,10 +144,10 @@ static class Salvataggio
             return false;
         }
 
-        // 1. Mondo pulito (imposta anche inventario/posizione di partenza, che sovrascriviamo)
+        // Mondo pulito (imposta anche inventario/posizione di partenza, che sovrascriviamo)
         Global.Inizializza(player);
 
-        // 2. Cataloghiamo per nome tutto ciò che esiste nel mondo appena creato
+        // Cataloghiamo per nome tutto ciò che esiste nel mondo appena creato
         Dictionary<string, Stanza> stanzePerNome = new();
         Dictionary<string, Porta> portePerNome = new();
         Dictionary<string, Terminale> terminaliPerNome = new();
@@ -190,7 +190,7 @@ static class Salvataggio
             }
         }
 
-        // 3. Riapplichiamo gli stati salvati
+        // Riapplichiamo gli stati salvati
         foreach (var (nome, stato) in dati.porte)
         {
             if (portePerNome.TryGetValue(nome, out Porta? porta) && Enum.TryParse(stato, out Porta.StatoPorta s))
@@ -212,7 +212,7 @@ static class Salvataggio
                 cassa.contenuto = null;
         }
 
-        // 4. Rimettiamo gli oggetti mobili dove erano stati lasciati
+        // Rimettiamo gli oggetti mobili dove erano stati lasciati
         foreach (var (nomeStanza, nomi) in dati.oggettiNelleStanze)
         {
             if (!stanzePerNome.TryGetValue(nomeStanza, out Stanza? stanza)) continue;
@@ -226,7 +226,7 @@ static class Salvataggio
             if (oggettiMobili.TryGetValue(nomeObj, out Oggetto? obj)) player.inventario.Push(obj);
         }
 
-        // 5. Stato del giocatore e della navetta
+        // Stato del giocatore e della navetta
         player.nome = dati.nome;
         player.vita = dati.vita;
         player.contatorePassi = dati.contatorePassi;
