@@ -46,6 +46,9 @@ class DatiSalvataggio
 
     // Nome stanza -> il personaggio presente è vivo?
     public Dictionary<string, bool> personaggiVivi { get; set; } = new();
+
+    // Stanza casuale in cui si trova Ryan (quella dell'IA è in eventoStanza)
+    public string ryanStanza { get; set; } = "";
 }
 
 static class Salvataggio
@@ -76,6 +79,7 @@ static class Salvataggio
                 finaleScelta = EventoFinale.scelta.ToString(),
                 finaleAutodistruzione = EventoFinale.autodistruzione,
                 finaleSecondiRimasti = EventoFinale.SecondiRimasti,
+                ryanStanza = Global.stanzaRyan,
                 coordinate = new[] { player.coordinate[0], player.coordinate[1] },
                 // Stack enumera dalla cima al fondo: invertiamo per salvare dal fondo
                 inventario = player.inventario.Select(o => o.nome).Reverse().ToList()
@@ -229,6 +233,9 @@ static class Salvataggio
         Global.componentiNavettaInstallati = dati.componentiNavetta;
         EventoIA.CaricaStato(dati.eventoStanza, dati.eventoAttivo, dati.eventoRisolto, dati.eventoSecondiRimasti);
         EventoFinale.CaricaStato(dati.finaleDialogoFatto, dati.finaleScelta, dati.finaleAutodistruzione, dati.finaleSecondiRimasti);
+
+        // Riposiziona i personaggi nelle stanze salvate (annullando quelle casuali)
+        Global.PosizionaPersonaggi(dati.ryanStanza, dati.eventoStanza);
 
         foreach (var (nomeStanza, vivo) in dati.personaggiVivi)
         {

@@ -9,6 +9,44 @@ class Global
     public static int componentiNavettaInstallati = 0;
     public static bool partitaVinta = false;
 
+    // Personaggi (posizionati in stanze casuali) e riferimenti utili al salvataggio
+    public static Personaggio? ryan;
+    public static Personaggio? iaOstile;
+    public static Antidolorifici? antidolorifici;
+    public static string stanzaRyan = "";
+
+    /// <summary>Ritorna la stanza con il nome indicato, o null se non esiste.</summary>
+    public static Stanza? TrovaStanza(string nome)
+    {
+        foreach (Stanza[] riga in map)
+            foreach (Stanza? s in riga)
+                if (s != null && s.nome == nome) return s;
+        return null;
+    }
+
+    /// <summary>
+    /// Posiziona i personaggi nelle stanze indicate (usato sia alla nuova
+    /// partita, con stanze casuali, sia al caricamento, con le stanze salvate).
+    /// Azzera prima ogni assegnazione precedente.
+    /// </summary>
+    public static void PosizionaPersonaggi(string nomeStanzaRyan, string nomeStanzaIA)
+    {
+        foreach (Stanza[] riga in map)
+            foreach (Stanza? s in riga)
+                if (s != null) s.personaggio = null;
+
+        Stanza? sr = TrovaStanza(nomeStanzaRyan);
+        if (sr != null && ryan != null)
+        {
+            sr.personaggio = ryan;
+            stanzaRyan = sr.nome;
+            if (antidolorifici != null) antidolorifici.stanzaUso = sr.nome; // gli antidolorifici si usano dov'è Ryan
+        }
+
+        Stanza? si = TrovaStanza(nomeStanzaIA);
+        if (si != null && iaOstile != null) si.personaggio = iaOstile;
+    }
+
     public static void Inizializza(Giocatore player)
     {
         componentiNavettaInstallati = 0;
@@ -756,13 +794,12 @@ class Global
         Cassa cassaMedica = new Cassa("Cassa Medica", "Un contenitore di forniture mediche sigillato elettronicamente.", null, Cassa.StatoCassa.Bloccata);
         salaMedica.lista.Add(cassaMedica);
 
-        // Cassa in Ripostiglio - SBLOCCATA: non collegata a nessun terminale
-        Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", new Oggetto("Nota Cartacea", "C'è scritto: 'Password terminali di servizio: 1234'.", 0.1f, true), Cassa.StatoCassa.Sbloccata);
+        // Cassa in Ripostiglio - SBLOCCATA: contiene l'Iniettore di Carburante (chiave 2)
+        Cassa cassaRipostiglio = new Cassa("Cassa del Ripostiglio", "Una vecchia cassa senza serratura.", iniettoreCarburante, Cassa.StatoCassa.Sbloccata);
         ripostiglio.lista.Add(cassaRipostiglio);
 
         // --- OGGETTI SUL PAVIMENTO ---
         corrEstS.lista.Add(martelloEmergenza);        // Corridoio Est (Sud)
-        ripostiglio.lista.Add(iniettoreCarburante);   // Ripostiglio
         salaComandi.lista.Add(antimateriaNeurale);    // Sala Comandi
         // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
         porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
@@ -793,9 +830,9 @@ class Global
         terminaleArchivio.casseControllate.Add(cassaArchivio);
         archivio.lista.Add(terminaleArchivio);
 
-        // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "1234", nota nella cassa del ripostiglio)
+        // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "9832", rivelata solo da Ryan)
         // -> porta Corridoio Centrale Nord-Sala Comandi
-        Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "9832");
         terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
         terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
         corrCentraleS.lista.Add(terminaleCorrCentraleS);
@@ -812,15 +849,25 @@ class Global
         terminaleMedica.casseControllate.Add(cassaMedica);
         salaMedica.lista.Add(terminaleMedica);
 
-        // --- RYAN: membro dell'equipaggio ferito nel Corridoio Centrale Nord ---
-        Personaggio ryan = new Personaggio("Ryan",
+        // --- RYAN: membro dell'equipaggio ferito (NPC "buono", stanza casuale) ---
+        ryan = new Personaggio("Ryan",
+            "Un membro dell'equipaggio, ferito e allo stremo delle forze.",
             "\"Aaah... la ferita... fa un male cane... ti prego... trova qualcosa per il dolore...\" (PLACEHOLDER)",
-            "Ryan giace immobile. È morto: non risponde più.");
-        corrCentraleN.personaggio = ryan;
+            "Ryan giace immobile. È morto: non risponde più.",
+            "Ryan giace ferito a terra. Premi [T] per parlargli.");
 
         // Gli Antidolorifici nella cassa medica: somministrati a Ryan rivelano
         // la password del terminale del corridoio centrale, poi lui muore.
-        cassaMedica.contenuto = new Antidolorifici(ryan, terminaleCorrCentraleS, "Corridoio Centrale (Nord)");
+        // La stanza d'uso viene impostata al piazzamento casuale di Ryan.
+        antidolorifici = new Antidolorifici(ryan, terminaleCorrCentraleS, "");
+        cassaMedica.contenuto = antidolorifici;
+
+        // --- IA OSTILE: NPC "cattivo", piazzato nella stanza casuale dell'evento ---
+        iaOstile = new Personaggio("IA Ostile",
+            "L'intelligenza artificiale che ha preso il controllo della stazione. Fredda e onnipresente.",
+            "\"Sei ancora qui? Patetico. Nulla può fermare ciò che ho iniziato.\" (PLACEHOLDER)",
+            "",
+            "Un occhio rosso ti scruta da ogni telecamera: l'IA Ostile è qui. Premi [T] per parlare.");
 
         // ====================================================================
         // 5. INSERIMENTO NELLA GRIGLIA LOGICA (6 Righe, 5 Colonne)
@@ -847,5 +894,19 @@ class Global
 
         // Reset dello scontro finale in Sala Comandi
         EventoFinale.Reset();
+
+        // Piazzamento casuale dei personaggi:
+        // - IA Ostile nella stanza dell'evento
+        // - Ryan in una stanza casuale diversa da Navetta, Porto, Sala Comandi
+        //   e dalla stanza dell'IA (una stanza ospita un solo personaggio)
+        string[] escluseRyan = { "Navetta", "Porto di Sbarco", "Sala Comandi", EventoIA.stanzaEvento };
+        List<Stanza> candidateRyan = new();
+        foreach (Stanza[] riga in map)
+            foreach (Stanza? s in riga)
+                if (s != null && Array.IndexOf(escluseRyan, s.nome) < 0)
+                    candidateRyan.Add(s);
+
+        string nomeStanzaRyan = candidateRyan[Random.Shared.Next(candidateRyan.Count)].nome;
+        PosizionaPersonaggi(nomeStanzaRyan, EventoIA.stanzaEvento);
     }
 }
