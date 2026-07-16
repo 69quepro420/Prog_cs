@@ -293,14 +293,19 @@ class Comando
     {
         if (player.stanza!.lista.Count == 0)
         {
-            Console.WriteLine("\nNon c'è niente di interessante in questa stanza. (Premi un tasto)");
+            Console.Clear();
+            Console.WriteLine($"Sei in: {player.stanza.nome}");
+            Console.WriteLine($"{player.stanza.descr}\n");
+            Console.WriteLine("Non c'è niente di interessante in questa stanza. (Premi un tasto)");
             Console.ReadKey(true);
             return;
         }
 
-        // Creiamo un menu con i nomi degli oggetti
+        // Creiamo un menu con i nomi degli oggetti. Cercando gli oggetti
+        // ricompare anche la descrizione della stanza.
         string[] nomiOggetti = player.stanza.lista.Select(o => o.nome).ToArray();
-        Menu menuOggetti = new Menu(nomiOggetti, "CERCA - Seleziona un oggetto da esaminare (ESC per uscire)");
+        Menu menuOggetti = new Menu(nomiOggetti,
+            $"{player.stanza.descr}\n\nCERCA - Seleziona un oggetto da esaminare (ESC per uscire)");
 
         int scelta = menuOggetti.Selezione();
 

@@ -93,7 +93,14 @@ class Giocatore
         }
 
         Console.WriteLine($"\nSei in: {stanza!.nome}");
-        Console.WriteLine($"{stanza.descr}");
+
+        // La descrizione della stanza compare solo la prima volta che ci si
+        // entra; in seguito è visibile solo cercando gli oggetti (tasto C).
+        if (!stanza.visitata)
+        {
+            Console.WriteLine($"{stanza.descr}");
+            stanza.visitata = true;
+        }
 
         if (stanza.personaggio != null)
         {
