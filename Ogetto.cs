@@ -141,6 +141,7 @@ class Strumento : Oggetto
         else
         {
             porta.CambiaStato(Porta.StatoPorta.Aperta);
+            Logger.Log($"Porta aperta con '{nome}': '{porta.nome}'.");
             Console.WriteLine($"\n{messaggioUso}");
             Console.WriteLine($"La porta '{porta.nome}' ora è aperta!");
         }
@@ -198,6 +199,9 @@ class IATascabile : Oggetto
         if (!EventoIA.attivo)
         {
             Console.WriteLine("\"Sistemi in standby. Nessuna minaccia rilevata... per ora.\"");
+            Console.WriteLine();
+            Console.WriteLine("\"Ricorda: servono 3 componenti per riparare la navetta.");
+            Console.WriteLine(" Premi [H] in qualsiasi momento per l'aiuto completo.\"");
         }
         else if (EventoIA.risolto)
         {
@@ -246,6 +250,7 @@ class OggettoChiave : Oggetto
 
         installato = true;
         Global.componentiNavettaInstallati++;
+        Logger.Log($"Componente installato nella navetta: '{nome}' ({Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali}).");
         Console.WriteLine($"\nInstalli {nome} nella navetta. " +
             $"({Global.componentiNavettaInstallati}/{Global.componentiNavettaTotali} componenti)");
 

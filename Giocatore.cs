@@ -6,8 +6,9 @@ namespace Project;
 
 class Giocatore
 {
-    // Peso massimo trasportabile: il Martello di Emergenza pesa esattamente questo valore
-    public const float pesoMassimo = 10f;
+    // Peso massimo trasportabile: il Martello di Emergenza pesa esattamente questo
+    // valore. Impostato a runtime dal file di configurazione (vedi Config).
+    public static float pesoMassimo = 10f;
 
     public string nome { get; set; }
     public int[] coordinate;
@@ -60,6 +61,7 @@ class Giocatore
             " [C] CERCA OGGETTI",
             " [T] PARLA",
             " [M] MAPPA",
+            " [H] AIUTO",
             " [ESC] PAUSA/SALVA"
         };
 
@@ -156,6 +158,7 @@ class Giocatore
         coordinate = new int[] { r, c };
         stanza = Global.map[r][c];
         contatorePassi++;
+        Logger.Log($"Passo {contatorePassi}: il giocatore entra in '{stanza!.nome}'.");
     }
 
     public void MostraMappa()

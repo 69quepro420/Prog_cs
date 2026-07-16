@@ -113,6 +113,7 @@ static class Salvataggio
 
             string json = JsonSerializer.Serialize(dati, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(FileSalvataggio, json);
+            Logger.Log($"Partita salvata su {FileSalvataggio}.");
             return true;
         }
         catch (Exception e)

@@ -1,0 +1,6 @@
+{
+  "pesoMassimo": 10,
+  "durataOssigenoSecondi": 120,
+  "durataAutodistruzioneSecondi": 60,
+  "nomeDefault": "Comandante"
+}
