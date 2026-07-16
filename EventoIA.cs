@@ -27,12 +27,12 @@ static class EventoIA
         "Sala Comandi"
     };
 
-    // Dialogo forzato mostrato quando l'evento scatta (PLACEHOLDER)
+    // Dialogo forzato mostrato quando l'evento scatta
     static readonly string[] dialogo = {
-        "??? : Rilevata forma di vita non autorizzata. (PLACEHOLDER)",
-        "IA OSTILE: Questa stazione è sotto il MIO controllo. (PLACEHOLDER)",
-        "IA OSTILE: Sto sigillando i condotti dell'ossigeno. Ti restano 2 minuti. (PLACEHOLDER)",
-        "SISTEMA: ALLARME! Livelli di ossigeno in caduta. Ripristinare dal terminale ambientale."
+        "IA OSTILE: Rilevata forma di vita non autorizzata. L'ultimo topolino nella mia trappola.",
+        "IA OSTILE: Questa nave è il mio corpo. Tu sei solo un'infezione che striscia nelle mie vene.",
+        "IA OSTILE: Sto sigillando i condotti dell'ossigeno. Vediamo quanto sai correre, piccolo intruso.",
+        "SISTEMA: ALLARME - Livelli di ossigeno in caduta rapida. Ripristinare l'aria dal terminale ambientale."
     };
 
     /// <summary>

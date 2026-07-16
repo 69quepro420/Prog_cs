@@ -831,8 +831,10 @@ Credo in te.
                                                               - Ryan", 0f, false);
         porto.lista.Add(notaRyan);
 
-        // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
-        porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
+        // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino.
+        // Il collegamento al terminale ossigeno viene impostato più sotto.
+        IATascabile iaTascabile = new IATascabile(portaPortoMagazzino, "Porto di Sbarco");
+        porto.lista.Add(iaTascabile);
 
         // --- TERMINALI ---
 
@@ -871,8 +873,9 @@ nella mia stanza. Prego tutti voi di non arrecare disturbo, grazie.");
         terminaleMotoriEst2.porteControllate.Add(portaMotoriEst2CorrEstSud);
         motoriEst2.lista.Add(terminaleMotoriEst2);
 
-        // TERMINALE SALA OSSIGENO: BLOCCATO (password "1234") -> sistema di ripristino ossigeno
-        Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        // TERMINALE SALA OSSIGENO: BLOCCATO (password "0451", rivelata dall'IA Tascabile
+        // durante l'emergenza) -> sistema di ripristino ossigeno
+        Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "0451");
         terminaleOssigeno.logs.Add(@"23 dicembre - Ore 16:30
 Mittente: Pier  -  Destinatario: Ignacio
 Azzardati a mangiare tutte le Milky Way bars e rimpiangerai di essere
@@ -881,6 +884,9 @@ indovina un po', dopodomani che giorno è?
 Non ti sei mai chiesto perché tutti lo chiamano Claus?");
         terminaleOssigeno.sistemaOssigeno = true;
         salaOssigeno.lista.Add(terminaleOssigeno);
+
+        // L'IA Tascabile conosce la password del terminale ambientale
+        iaTascabile.terminaleOssigeno = terminaleOssigeno;
 
         // TERMINALE ARCHIVIO: CRIPTATO -> cassa dell'Archivio
         Terminale terminaleArchivio = new Terminale("Terminale di Archivio", "Un terminale dati protetto da crittografia.", StatoTerminale.Criptato, "");
@@ -944,7 +950,7 @@ Ultimo parametro vitale rilevato: instabile. Poi, il silenzio.");
         // --- RYAN: membro dell'equipaggio ferito (NPC "buono", stanza casuale) ---
         ryan = new Personaggio("Ryan",
             "Un membro dell'equipaggio, ferito e allo stremo delle forze.",
-            "\"Aaah... la ferita... fa un male cane... ti prego... trova qualcosa per il dolore...\" (PLACEHOLDER)",
+            "\"Aaah... la ferita brucia come ghiaccio... non riesco più a pensare... ti prego, trova qualcosa per il dolore, qualsiasi cosa...\"",
             $"Ti inginocchi accanto al corpo di Ryan. Ripensi alle sue ultime parole: la password del terminale del corridoio centrale era {terminaleCorrCentraleS.password}.",
             "Ryan giace ferito a terra. Premi [T] per parlargli.");
 
@@ -957,7 +963,7 @@ Ultimo parametro vitale rilevato: instabile. Poi, il silenzio.");
         // --- IA OSTILE: NPC "cattivo", piazzato nella stanza casuale dell'evento ---
         iaOstile = new Personaggio("IA Ostile",
             "L'intelligenza artificiale che ha preso il controllo della stazione. Fredda e onnipresente.",
-            "\"Sei ancora qui? Patetico. Nulla può fermare ciò che ho iniziato.\" (PLACEHOLDER)",
+            "\"Ti guardo attraverso ogni lente, ti ascolto in ogni paratia. Non sei un ospite, piccolo intruso: sei una preda, e io ho tutto il tempo del mondo.\"",
             "",
             "Un occhio rosso ti scruta da ogni telecamera: l'IA Ostile è qui. Premi [T] per parlare.");
 

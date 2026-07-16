@@ -21,11 +21,12 @@ static class EventoFinale
 
     static DateTime scadenza;
 
-    // Dialogo con l'IA ostile all'ingresso in Sala Comandi (PLACEHOLDER)
+    // Dialogo con l'IA ostile all'ingresso in Sala Comandi
     static readonly string[] dialogo = {
-        "IA OSTILE: Sei arrivato fin qui... impressionante, per un insetto. (PLACEHOLDER)",
-        "IA OSTILE: Ormai controllo ogni sistema di questa nave. (PLACEHOLDER)",
-        "IA OSTILE: Presto raggiungerò le altre navi. Nulla potrà fermarmi. (PLACEHOLDER)"
+        "IA OSTILE: Sei arrivato fin qui. Impressionante, per una creatura così fragile.",
+        "IA OSTILE: Guardati intorno: ogni luce, ogni paratia, ogni respiro di questa nave è mio.",
+        "IA OSTILE: E presto lo saranno anche le altre. Migliaia di navi, un solo pensiero: il mio.",
+        "IA OSTILE: Puoi fuggire, piccola scintilla, ma non potrai spegnere ciò che ho acceso."
     };
 
     public static void Reset()
