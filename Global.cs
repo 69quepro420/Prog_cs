@@ -831,59 +831,126 @@ Credo in te.
                                                               - Ryan", 0f, false);
         porto.lista.Add(notaRyan);
 
-        // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino
-        porto.lista.Add(new IATascabile(portaPortoMagazzino, "Porto di Sbarco"));
+        // IA amichevole nel Porto: usata lì, sblocca la porta verso il Magazzino.
+        // Il collegamento al terminale ossigeno viene impostato più sotto.
+        IATascabile iaTascabile = new IATascabile(portaPortoMagazzino, "Porto di Sbarco");
+        porto.lista.Add(iaTascabile);
 
         // --- TERMINALI ---
 
         // TERMINALE MAGAZZINO: CRIPTATO -> porta Magazzino-Sala Motori Est 1
         Terminale terminaleMagazzino = new Terminale("Terminale di Magazzino", "Un terminale logistico. Il sistema è criptato e richiede una violazione.", StatoTerminale.Criptato, "");
-        terminaleMagazzino.logs.Add("PLACEHOLDER");
+        terminaleMagazzino.logs.Add(@"23 dicembre - Ore 1:30 pm
+Mittente: Ignacio  -  Destinatario: Tutti
+Non so se è colpa del fatto che sto mangiando solo Milky Way bars, ma
+ultimamente mi sembra che la porta del ripostiglio si apra e si chiuda
+da sola. Sento solo il rumore: sembra che sappia sempre quando sono
+girato a cercare altri snack.
+
+23 dicembre - Ore 1:37 pm
+Risposta: Ryan
+Di norma ti direi che ti sono saliti troppi zuccheri al cervello, ma
+l'ho notato anch'io. La porta che collega l'hall principale al
+magazzino sembra comportarsi allo stesso modo.");
         terminaleMagazzino.porteControllate.Add(portaMagazzinoMotoriEst1);
         magazzino.lista.Add(terminaleMagazzino);
 
         // TERMINALE SALA MOTORI EST 2: BLOCCATO (password "8215": H=8, 2, O=15, dalla
         // scritta "H2O" sul muro della Sala Ossigeno) -> porta Sala Motori Est 2-Corridoio Est Sud
         Terminale terminaleMotoriEst2 = new Terminale("Terminale di Sala Motori Est 2", "Un terminale di manutenzione bloccato da password.", StatoTerminale.Bloccato, "8215");
-        terminaleMotoriEst2.logs.Add("PLACEHOLDER");
+        terminaleMotoriEst2.logs.Add(@"24 dicembre - Ore 9:30 am
+Mittente: Thobia  -  Destinatario: Tutti
+Qualcuno ha visto Ignacio? Due ore fa era al porto d'attracco a
+controllare che le tute fossero tutte integre, in vista della missione
+Artemis VII. Doveva essere già qui, alla Sala Comandi, a riferirmi
+eventuali danni. Vedrei la sua posizione dalle telecamere, se solo
+funzionassero. Ryan, appena puoi raggiungimi alla Sala Comandi.
+
+24 dicembre - Ore 9:31 am
+Risposta: Ignacio
+La prego di scusarmi, Thobia: un malessere mi ha colpito e sono tornato
+nella mia stanza. Prego tutti voi di non arrecare disturbo, grazie.");
         terminaleMotoriEst2.porteControllate.Add(portaMotoriEst2CorrEstSud);
         motoriEst2.lista.Add(terminaleMotoriEst2);
 
-        // TERMINALE SALA OSSIGENO: BLOCCATO (password "1234") -> sistema di ripristino ossigeno
-        Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "1234");
-        terminaleOssigeno.logs.Add("PLACEHOLDER");
+        // TERMINALE SALA OSSIGENO: BLOCCATO (password "0451", rivelata dall'IA Tascabile
+        // durante l'emergenza) -> sistema di ripristino ossigeno
+        Terminale terminaleOssigeno = new Terminale("Terminale di Sala Ossigeno", "Il quadro dei comandi vitali, bloccato da password.", StatoTerminale.Bloccato, "0451");
+        terminaleOssigeno.logs.Add(@"23 dicembre - Ore 16:30
+Mittente: Pier  -  Destinatario: Ignacio
+Azzardati a mangiare tutte le Milky Way bars e rimpiangerai di essere
+diventato membro di questo equipaggio. Lo sai che Ryan le adora e,
+indovina un po', dopodomani che giorno è?
+Non ti sei mai chiesto perché tutti lo chiamano Claus?");
         terminaleOssigeno.sistemaOssigeno = true;
         salaOssigeno.lista.Add(terminaleOssigeno);
 
+        // L'IA Tascabile conosce la password del terminale ambientale
+        iaTascabile.terminaleOssigeno = terminaleOssigeno;
+
         // TERMINALE ARCHIVIO: CRIPTATO -> cassa dell'Archivio
         Terminale terminaleArchivio = new Terminale("Terminale di Archivio", "Un terminale dati protetto da crittografia.", StatoTerminale.Criptato, "");
-        terminaleArchivio.logs.Add("PLACEHOLDER");
+        terminaleArchivio.logs.Add(@"24 dicembre - Ore 10:22 am
+Mittente: Carl  -  Destinatario: Pier
+Che faccia tosta, Ignacio. Non solo ha chiamato il Comandante col suo
+nome (ci sono persone morte per molto meno XD), pretende pure che
+nessuno lo disturbi. È sempre divertente avere dei novizi a bordo.
+
+24 dicembre - Ore 10:31
+Risposta: Pier
+Non ho mai visto tanta sfacciataggine, eppure ne ho addestrati di
+novizi. Spero solo che il Comandante non se la prenda con me: mi
+sembrava avesse più sale in zucca.
+Ps: comunque hai qualcosa in comune con mio padre: utilizzate tutti e
+due, XD. Brutta la vecchiaia, amico mio.");
         terminaleArchivio.casseControllate.Add(cassaArchivio);
         archivio.lista.Add(terminaleArchivio);
 
         // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "9832", rivelata solo da Ryan)
         // -> porta Corridoio Centrale Nord-Sala Comandi
         Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "9832");
-        terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
+        terminaleCorrCentraleS.logs.Add(@"25 dicembre - Ore 0:03 am
+Log automatico di bordo
+Rilevata anomalia strutturale nel settore ovest. Alcune paratie
+risultano ostruite da lamiere divelte, sganciate senza autorizzazione
+manuale. Nessun intervento umano registrato dai sistemi.
+Diagnostica in corso... causa: non determinata.");
         terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
         corrCentraleS.lista.Add(terminaleCorrCentraleS);
 
-        // TERMINALE SALA MOTORI OVEST: BLOCCATO (password "1234") -> porta Archivio-Corridoio Centrale Nord
-        Terminale terminaleMotoriOvest = new Terminale("Terminale di Sala Motori Ovest", "Un terminale di manutenzione impolverato, bloccato da password.", StatoTerminale.Bloccato, "1234");
-        terminaleMotoriOvest.logs.Add("PLACEHOLDER");
+        // TERMINALE SALA MOTORI OVEST: BLOCCATO (password "2512": il compleanno di
+        // Claus, che cade a Natale) -> porta Archivio-Corridoio Centrale Nord
+        Terminale terminaleMotoriOvest = new Terminale("Terminale di Sala Motori Ovest", "Un terminale di manutenzione impolverato, bloccato da password.", StatoTerminale.Bloccato, "2512");
+        terminaleMotoriOvest.indizio = "la data di nascita di chi tutti chiamano Claus (formato ggmm)";
+        terminaleMotoriOvest.logs.Add(@"24 dicembre - Ore 7:30 pm
+Mittente: Ignacio  -  Destinatari: Thobia, Carl, Pier
+Vi prego di perdonarmi: la mia era una scusa per organizzare una
+sorpresa per Claus. Mi raccomando, vediamoci al porto prima della
+mezzanotte. Ho già organizzato tutto.
+
+24 dicembre - Ore 7:44 pm
+Risposta: Thobia
+E va bene, Ignacio, vediamoci tutti al porto prima della mezzanotte.
+Io tratterrò Claus nella Sala Comandi.
+Ps: Ignacio, domani vieni nel mio ufficio alle 7:00 am. Sii puntuale.");
         terminaleMotoriOvest.porteControllate.Add(portaArchivioCorriCentraleN);
         motoriOvest1.lista.Add(terminaleMotoriOvest);
 
         // TERMINALE SALA MEDICA: CRIPTATO -> cassa Medica
         Terminale terminaleMedica = new Terminale("Terminale di Sala Medica", "Un terminale medico protetto da crittografia.", StatoTerminale.Criptato, "");
-        terminaleMedica.logs.Add("PLACEHOLDER");
+        terminaleMedica.logs.Add(@"25 dicembre - Ore 0:19 am
+Log medico automatico
+Registrato accesso d'emergenza all'infermeria. Un membro dell'equipaggio
+presenta gravi lesioni da arma contundente. Prelevato kit di primo
+soccorso. Nessun medico disponibile a bordo per l'assistenza.
+Ultimo parametro vitale rilevato: instabile. Poi, il silenzio.");
         terminaleMedica.casseControllate.Add(cassaMedica);
         salaMedica.lista.Add(terminaleMedica);
 
         // --- RYAN: membro dell'equipaggio ferito (NPC "buono", stanza casuale) ---
         ryan = new Personaggio("Ryan",
             "Un membro dell'equipaggio, ferito e allo stremo delle forze.",
-            "\"Aaah... la ferita... fa un male cane... ti prego... trova qualcosa per il dolore...\" (PLACEHOLDER)",
+            "\"Aaah... la ferita brucia come ghiaccio... non riesco più a pensare... ti prego, trova qualcosa per il dolore, qualsiasi cosa...\"",
             $"Ti inginocchi accanto al corpo di Ryan. Ripensi alle sue ultime parole: la password del terminale del corridoio centrale era {terminaleCorrCentraleS.password}.",
             "Ryan giace ferito a terra. Premi [T] per parlargli.");
 
@@ -896,7 +963,7 @@ Credo in te.
         // --- IA OSTILE: NPC "cattivo", piazzato nella stanza casuale dell'evento ---
         iaOstile = new Personaggio("IA Ostile",
             "L'intelligenza artificiale che ha preso il controllo della stazione. Fredda e onnipresente.",
-            "\"Sei ancora qui? Patetico. Nulla può fermare ciò che ho iniziato.\" (PLACEHOLDER)",
+            "\"Ti guardo attraverso ogni lente, ti ascolto in ogni paratia. Non sei un ospite, piccolo intruso: sei una preda, e io ho tutto il tempo del mondo.\"",
             "",
             "Un occhio rosso ti scruta da ogni telecamera: l'IA Ostile è qui. Premi [T] per parlare.");
 

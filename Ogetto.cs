@@ -158,6 +158,9 @@ class IATascabile : Oggetto
     public Porta? portaCollegata;
     public string stanzaSblocco = "";
 
+    // Terminale della Sala Ossigeno: durante l'emergenza l'IA ne rivela la password
+    public Terminale? terminaleOssigeno;
+
     public IATascabile(Porta? portaCollegata = null, string stanzaSblocco = "")
     {
         this.nome = "IA Tascabile";
@@ -196,22 +199,22 @@ class IATascabile : Oggetto
 
         if (!EventoIA.attivo)
         {
-            Console.WriteLine("\"Sistemi in standby. Nessuna minaccia rilevata... per ora.\"");
+            Console.WriteLine("\"Sistemi in standby. Per ora l'aria è respirabile.\"");
             Console.WriteLine();
-            Console.WriteLine("\"Ricorda: servono 3 componenti per riparare la navetta.");
-            Console.WriteLine(" Premi [H] in qualsiasi momento per l'aiuto completo.\"");
+            Console.WriteLine("\"Ricorda perché sei qui: tre componenti, e la navetta tornerà a volare.");
+            Console.WriteLine(" Se ti perdi, premi [H]. Io resto con te.\"");
         }
         else if (EventoIA.risolto)
         {
-            Console.WriteLine("\"Ottimo lavoro! I livelli di ossigeno sono di nuovo stabili.\"");
+            Console.WriteLine("\"Respira pure: i condotti sono di nuovo aperti. Le hai fregato una mano.\"");
         }
         else
         {
-            // Indovinello che rivela la password del Terminale di Sala Ossigeno (PLACEHOLDER)
-            Console.WriteLine("\"*bzzt* Presto! Il terminale della Sala Ossigeno può fermare tutto!\"");
+            // Durante l'emergenza l'IA rivela direttamente la password del terminale ambientale
+            string pw = terminaleOssigeno != null ? terminaleOssigeno.password : "????";
+            Console.WriteLine("\"*bzzt* Ascoltami! Vai al terminale della Sala Ossigeno, subito!\"");
             Console.WriteLine();
-            Console.WriteLine("\"La password? Te la dico a modo mio... (PLACEHOLDER INDOVINELLO)\"");
-            Console.WriteLine("\"Sali quattro gradini, uno alla volta, partendo dal primo.\"");
+            Console.WriteLine($"\"La password è {pw}. Ripristina l'aria dalla Rete Locale prima che sia troppo tardi!\"");
         }
 
         Console.WriteLine("\nPremi un tasto per continuare...");
@@ -304,12 +307,12 @@ class Antidolorifici : Oggetto
 
         Console.Clear();
         Console.WriteLine($"Somministri gli antidolorifici a {ferito.nome}.\n");
-        Console.WriteLine("\"Aaah... finalmente... il dolore si placa...\"");
+        Console.WriteLine("\"Aaah... finalmente... il dolore si placa. Grazie, sconosciuto...\"");
         Console.WriteLine();
         if (terminale != null)
-            Console.WriteLine($"\"Ascolta... il terminale del corridoio centrale... la password è {terminale.password}...\" (PLACEHOLDER)");
+            Console.WriteLine($"\"Ascolta... devi arrivare alla Sala Comandi... il terminale del corridoio centrale... la password è {terminale.password}... fermala... ti prego...\"");
         Console.WriteLine();
-        Console.WriteLine($"{ferito.nome} chiude gli occhi lentamente. Non respira più.");
+        Console.WriteLine($"Un ultimo respiro, poi {ferito.nome} chiude gli occhi. Non li riaprirà più.");
 
         ferito.vivo = false;
         usato = true;
