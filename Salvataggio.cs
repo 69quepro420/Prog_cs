@@ -15,7 +15,6 @@ namespace Project;
 class DatiSalvataggio
 {
     public string nome { get; set; } = "Comandante";
-    public int vita { get; set; } = 100;
     public int contatorePassi { get; set; }
     public int componentiNavetta { get; set; }
     public int[] coordinate { get; set; } = new[] { 5, 2 };
@@ -68,7 +67,6 @@ static class Salvataggio
             DatiSalvataggio dati = new DatiSalvataggio
             {
                 nome = player.nome,
-                vita = player.vita,
                 contatorePassi = player.contatorePassi,
                 componentiNavetta = Global.componentiNavettaInstallati,
                 eventoStanza = EventoIA.stanzaEvento,
@@ -228,7 +226,6 @@ static class Salvataggio
 
         // Stato del giocatore e della navetta
         player.nome = dati.nome;
-        player.vita = dati.vita;
         player.contatorePassi = dati.contatorePassi;
         Global.componentiNavettaInstallati = dati.componentiNavetta;
         EventoIA.CaricaStato(dati.eventoStanza, dati.eventoAttivo, dati.eventoRisolto, dati.eventoSecondiRimasti);
