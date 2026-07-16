@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>SPACE OS - Relazione</title>
+<style>
+    @page { size: A4; margin: 13mm 14mm; }
+    * { box-sizing: border-box; }
+    body { font-family: "Segoe UI", Arial, sans-serif; color: #1a1a1a; font-size: 10pt; line-height: 1.35; margin: 0; }
+    h1 { font-size: 19pt; margin: 0 0 2px; letter-spacing: 1px; }
+    .sub { color: #555; font-size: 9.5pt; margin: 0 0 2px; }
+    .gruppo { font-size: 9.5pt; margin: 4px 0 10px; padding: 4px 8px; background: #f0f2f5; border-left: 3px solid #3a5a8c; }
+    h2 { font-size: 12.5pt; color: #24406b; border-bottom: 1.5px solid #24406b; padding-bottom: 2px; margin: 14px 0 6px; }
+    p { margin: 5px 0; text-align: justify; }
+    pre { font-family: "Consolas", "Courier New", monospace; font-size: 7.4pt; line-height: 1.12; background: #0d1b2a; color: #d6e2f0; padding: 8px 10px; border-radius: 4px; overflow: hidden; white-space: pre; }
+    .avoid-break { page-break-inside: avoid; }
+    .page-break { page-break-before: always; }
+
+    /* UML */
+    .uml-tree { text-align: center; margin: 6px 0; }
+    .cls { display: inline-block; vertical-align: top; border: 1.2px solid #24406b; border-radius: 4px; background: #fff; text-align: left; margin: 3px; min-width: 118px; }
+    .cls .name { background: #24406b; color: #fff; font-weight: bold; padding: 2px 6px; font-size: 8.5pt; border-radius: 3px 3px 0 0; text-align: center; }
+    .cls .sec { padding: 2px 6px; font-size: 7.3pt; border-top: 1px solid #cdd6e4; font-family: "Consolas", monospace; }
+    .base .name { background: #7a2e2e; }
+    .stat .name { background: #3f6b3f; }
+    .children { margin-top: 4px; }
+    .connector { color: #7a2e2e; font-size: 10pt; margin: -1px 0 1px; }
+    .rel { font-size: 8.4pt; margin: 6px 0 0; }
+    .rel li { margin: 1px 0; }
+    .rel code { font-family: "Consolas", monospace; background: #eef1f6; padding: 0 3px; border-radius: 3px; }
+    .cols { column-count: 2; column-gap: 14px; }
+    ol.seq { margin: 4px 0; padding-left: 20px; font-size: 9.2pt; }
+    ol.seq li { margin: 2.5px 0; }
+    .k { color: #7a2e2e; font-weight: bold; }
+    .cap { font-size: 8pt; color: #666; text-align: center; margin: 2px 0 0; }
+</style>
+</head>
+<body>
+
+<h1>SPACE&nbsp;OS</h1>
+<p class="sub">Relazione di progetto &middot; Programmazione ad Oggetti e Strutture Dati &middot; A.A. 2025/2026</p>
+<div class="gruppo"><b>Componenti del gruppo:</b> _______________________________&nbsp;&nbsp;_______________________________</div>
+
+<h2>1. Descrizione del gioco</h2>
+<p><b>SPACE OS</b> &egrave; un'avventura testuale (<i>interactive fiction</i>) sviluppata in C# con paradigma
+a oggetti. Il giocatore &egrave; un astronauta che, di ritorno verso casa per Natale, attracca a una
+stazione spaziale alla deriva: l'intera nave &egrave; controllata da un'intelligenza artificiale di bordo
+impazzita, che ha gi&agrave; sterminato l'equipaggio. La navetta del protagonista &egrave; danneggiata e, per
+ripartire, servono <b>tre componenti</b> (due turbopompe e un ugello) nascosti nella stazione.</p>
+<p>Il giocatore si muove tra le stanze con i tasti <b>WASD</b>, attraversa porte (aperte, bloccate o da
+sbloccare) e cerca oggetti, che pu&ograve; raccogliere rispettando un <b>limite di peso</b> e una gestione
+dell'inventario a <b>pila (LIFO)</b>: si accede sempre e solo all'ultimo oggetto raccolto. Alcuni oggetti,
+usati nella stanza giusta, aprono nuovi passaggi; altri servono a interagire con i personaggi. I
+<b>terminali</b> della rete di bordo mostrano i log dell'equipaggio e comandano porte e casse tramite la
+Rete Locale, ma vanno sbloccati con una password (celata in indizi ambientali) oppure violati con un
+minigioco, il <b>Breach Protocol</b>.</p>
+<p>Eventi dinamici animano la partita: l'IA ostile pu&ograve; <b>teletrasportare</b> il giocatore e sigillare
+l'ossigeno, avviando un timer di 2 minuti. Lo scontro finale in Sala Comandi propone una scelta che porta a
+<b>tre finali</b> distinti. Il gioco offre inoltre <b>salvataggio/caricamento</b>, un <b>file di
+configurazione</b> esterno, un sistema di <b>logging</b> degli eventi e un comando di <b>aiuto</b>.</p>
+
+<h2>2. Diagramma delle classi (UML)</h2>
+<div class="uml-tree avoid-break">
+    <div class="cls base">
+        <div class="name">Oggetto</div>
+        <div class="sec">+ nome, descr : string<br>+ peso : float<br>+ mobile : bool<br>+ Consumato : bool</div>
+        <div class="sec">+ Usa(Giocatore)</div>
+    </div>
+    <div class="connector">&#9651;&nbsp; ereditariet&agrave; (override di Usa) &nbsp;&#9651;</div>
+    <div class="children">
+        <div class="cls"><div class="name">Terminale</div><div class="sec">stato, password<br>logs, indizio<br>porte/casseControllate</div></div>
+        <div class="cls"><div class="name">Cassa</div><div class="sec">stato, contenuto<br>Usa(), Sblocca()</div></div>
+        <div class="cls"><div class="name">Strumento</div><div class="sec">stanzaUso, porta</div></div>
+        <div class="cls"><div class="name">OggettoChiave</div><div class="sec">installato</div></div>
+        <div class="cls"><div class="name">IATascabile</div><div class="sec">portaCollegata<br>terminaleOssigeno<br>Parla()</div></div>
+        <div class="cls"><div class="name">Antidolorifici</div><div class="sec">ferito, terminale</div></div>
+    </div>
+</div>
+
+<div class="uml-tree avoid-break">
+    <div class="cls"><div class="name">Giocatore</div><div class="sec">nome, coordinate<br>stanza : Stanza<br>inventario : Stack&lt;Oggetto&gt;<br>contatorePassi</div><div class="sec">Muoviti(), UsaOggetto()<br>DisegnaHUD(), PesoInventario()</div></div>
+    <div class="cls"><div class="name">Stanza</div><div class="sec">nome, descr, mappaAscii<br>visitata : bool<br>lista : List&lt;Oggetto&gt;<br>portaNord/Sud/Est/Ovest<br>personaggio</div></div>
+    <div class="cls"><div class="name">Porta</div><div class="sec">nome<br>stato : StatoPorta<br>messaggioBloccata</div></div>
+    <div class="cls"><div class="name">Personaggio</div><div class="sec">nome, descr<br>vivo : bool<br>Parla()</div></div>
+    <div class="cls"><div class="name">Menu</div><div class="sec">opzioni[]<br>Selezione()</div></div>
+</div>
+
+<div class="uml-tree avoid-break">
+    <div class="cls stat"><div class="name">Global &laquo;static&raquo;</div><div class="sec">map : Stanza[][]<br>Inizializza()</div></div>
+    <div class="cls stat"><div class="name">Comando &laquo;static&raquo;</div><div class="sec">Start(), CercaOggetti()<br>GestisciInventarioLIFO()</div></div>
+    <div class="cls stat"><div class="name">EventoIA / EventoFinale</div><div class="sec">timer, stato evento<br>ControllaIngresso()</div></div>
+    <div class="cls stat"><div class="name">Salvataggio &laquo;static&raquo;</div><div class="sec">Salva(), Carica()</div></div>
+    <div class="cls stat"><div class="name">Config / Logger</div><div class="sec">Carica() / Log()</div></div>
+    <div class="cls stat"><div class="name">AnimazioneIntro</div><div class="sec">Gioca(), MostraDialogo()</div></div>
+</div>
+
+<ul class="rel cols">
+    <li><span class="k">&#9651;</span> <code>Terminale, Cassa, Strumento, OggettoChiave, IATascabile, Antidolorifici</code> ereditano da <code>Oggetto</code>.</li>
+    <li><span class="k">&#9670;</span> <code>Giocatore</code> possiede un <code>Stack&lt;Oggetto&gt;</code> (inventario, LIFO).</li>
+    <li><span class="k">&#9670;</span> <code>Stanza</code> contiene una <code>List&lt;Oggetto&gt;</code>, fino a 4 <code>Porta</code> e un <code>Personaggio</code>.</li>
+    <li><span class="k">&#8594;</span> <code>Giocatore</code> conosce la <code>Stanza</code> corrente; <code>Global.map</code> &egrave; la griglia di stanze.</li>
+    <li><span class="k">&#8594;</span> <code>Terminale</code> comanda le <code>Porta</code> e le <code>Cassa</code> collegate (Rete Locale).</li>
+    <li><span class="k">&#8594;</span> <code>Comando</code> orchestra il ciclo di gioco e usa <code>Menu</code>, <code>EventoIA</code>, <code>EventoFinale</code>.</li>
+</ul>
+<p class="cap">Polimorfismo: <code>Giocatore.UsaOggetto()</code> invoca <code>Usa()</code> nella versione specifica di ogni sottoclasse.</p>
+
+<div class="page-break"></div>
+<h2>3. Mappa del gioco</h2>
+<pre>
+                                /^\
+                               /   \
+                    +---------/     \---------+
+                   /        SALA COMANDI       \
+        +---------+-------------+---------------+-------------+---------+
+        |CORRIDOIO| RIPOSTIGLIO |   CORRIDOIO   |   ARCHIVIO  |CORRIDOIO|
+        |  OVEST  |             |   CENTRALE    |             |   EST   |
+        |  (Nord) |             |    (Nord)     |             | (Nord)  |
+        +- - - - -+-------------+- - - - - - - -+-------------+- - - - -+
+        |CORRIDOIO|    SALA     |   CORRIDOIO   |    SALA     |CORRIDOIO|
+        |  OVEST  |   MEDICA    |   CENTRALE    |  OSSIGENO   |   EST   |
+        |  (Sud)  |             |    (Sud)      |             | (Sud)   |
+        +---------+-------------+---------------+-------------+---------+
+        | S.MOTORI|  S.MOTORI   |               |  S.MOTORI   | S.MOTORI|
+        |  OVEST  |   OVEST     |   MAGAZZINO   |    EST      |   EST   |
+        |    1    |     2       |               |     1       |    2    |
+        +---------+-------------+-------+-------+-------------+---------+
+                                |      PORTO     |
+                                |   DI SBARCO    |
+                                +-------+-------+
+                                        |
+                                 (               )
+                                 (    NAVETTA    )
+                                  '-------------'
+</pre>
+<p class="cap">Griglia 6&times;5. Le stanze adiacenti sono collegate da porte (Nord / Sud / Est / Ovest);
+alcune nascono bloccate e vanno aperte con un oggetto o da un terminale. Punto di partenza: la Navetta.</p>
+
+<h2>4. Sequenza di vittoria</h2>
+<ol class="seq">
+    <li>Dalla <b>Navetta</b> scendi al <b>Porto di Sbarco</b>: raccogli l'<b>IA Tascabile</b> e leggi la nota di Ryan.</li>
+    <li><b>Usa l'IA Tascabile</b> nel Porto per sbloccare la porta verso il <b>Magazzino</b>.</li>
+    <li>Nel Magazzino <b>viola il terminale criptato</b> (Breach Protocol): apre la porta per la <b>Sala Motori Est 1</b>.</li>
+    <li>In Sala Motori Est 1 apri la cassa &laquo;Botola nella parete&raquo; e prendi la <b>Turbopompa Primaria</b> <span class="k">(1&deg; componente)</span>.</li>
+    <li>Vai in <b>Sala Ossigeno</b> ed esamina la scritta sul muro: disegna <b>&laquo;H2O&raquo;</b> &rarr; password <span class="k">8215</span> (H=8, 2, O=15).</li>
+    <li>In <b>Sala Motori Est 2</b> inserisci <span class="k">8215</span> nel terminale: apre il passaggio verso il <b>Corridoio Est</b> e la zona centrale.</li>
+    <li>Raggiungi l'<b>Archivio</b>, viola il terminale criptato e apri il &laquo;Cassetto pieno di scartoffie&raquo;: ottieni il <b>Piede di Porco</b>.</li>
+    <li>Torna in <b>Magazzino</b> e usa il Piede di Porco: apre la porta verso la <b>Sala Motori Ovest</b>.</li>
+    <li>In Sala Motori Ovest usa il terminale con la password <span class="k">2512</span> (compleanno di &laquo;Claus&raquo;, indizio al prompt): apre la porta <b>Archivio &ndash; Corridoio Centrale</b>.</li>
+    <li>Prendi il <b>Martello di Emergenza</b> (Corridoio Est Sud); scarta ogni altro oggetto (pesa troppo) e usalo in <b>Corridoio Ovest Sud</b> per sfondare l'accesso alla <b>Sala Medica</b>.</li>
+    <li>Nel <b>Ripostiglio</b> apri la cassa: prendi la <b>Turbopompa Secondaria</b> <span class="k">(2&deg; componente)</span>.</li>
+    <li>In Sala Medica viola il terminale, prendi gli <b>Antidolorifici</b> e cerca <b>Ryan</b> (ferito, in una stanza casuale): dagli gli antidolorifici e ti rivela la password <span class="k">9832</span>.</li>
+    <li>Con <span class="k">9832</span> sblocca il <b>terminale del Corridoio Centrale</b>: apre la porta verso la <b>Sala Comandi</b>.</li>
+    <li>In <b>Sala Comandi</b> prendi l'<b>Ugello</b> <span class="k">(3&deg; componente)</span>. Parte lo scontro con l'IA: scegli tra lasciarla viva o attivare l'<b>autodistruzione</b>.</li>
+    <li>Torna alla <b>Navetta</b> e <b>installa i tre componenti</b> (Turbopompa Primaria, Turbopompa Secondaria, Ugello): la navetta riparte e <b>hai vinto</b>.</li>
+</ol>
+<p class="cap">Se durante la partita l'IA sigilla l'ossigeno, parla con l'IA Tascabile (rivela la password <span class="k">0451</span>)
+e ripristina l'aria dal terminale della Sala Ossigeno entro il timer, altrimenti la partita &egrave; persa.</p>
+
+</body>
+</html>
