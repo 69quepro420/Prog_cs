@@ -13,6 +13,9 @@ class Terminale : Oggetto
     public string password;
     public List<string> logs;
 
+    // Indizio mostrato al prompt della password (leggibile senza sbloccare)
+    public string indizio = "";
+
     // Liste di dispositivi che questo terminale può controllare (impostate dallo sviluppatore)
     public List<Porta> porteControllate = new List<Porta>();
     public List<Cassa> casseControllate = new List<Cassa>();
@@ -62,6 +65,8 @@ MYMMMM9  MMYMMM9  `YMMM9'Yb.YMMMM9   YMMMM9         YMMMMM9  MYMMMM9
         Console.WriteLine("======================================");
         Console.WriteLine("TERMINALE BLOCCATO. RICHIESTA PASSWORD.");
         Console.WriteLine("======================================");
+        if (!string.IsNullOrEmpty(indizio))
+            Console.WriteLine($"Indizio: {indizio}\n");
         Console.Write("> ");
         string? input = Console.ReadLine();
 

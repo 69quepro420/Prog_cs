@@ -903,12 +903,19 @@ due, XD. Brutta la vecchiaia, amico mio.");
         // TERMINALE CORRIDOIO CENTRALE SUD: BLOCCATO (password "9832", rivelata solo da Ryan)
         // -> porta Corridoio Centrale Nord-Sala Comandi
         Terminale terminaleCorrCentraleS = new Terminale("Terminale di Corridoio Centrale", "Un terminale di sicurezza incassato nella parete, bloccato da password.", StatoTerminale.Bloccato, "9832");
-        terminaleCorrCentraleS.logs.Add("PLACEHOLDER");
+        terminaleCorrCentraleS.logs.Add(@"25 dicembre - Ore 0:03 am
+Log automatico di bordo
+Rilevata anomalia strutturale nel settore ovest. Alcune paratie
+risultano ostruite da lamiere divelte, sganciate senza autorizzazione
+manuale. Nessun intervento umano registrato dai sistemi.
+Diagnostica in corso... causa: non determinata.");
         terminaleCorrCentraleS.porteControllate.Add(portaCorrCentraleNSalaComandi);
         corrCentraleS.lista.Add(terminaleCorrCentraleS);
 
-        // TERMINALE SALA MOTORI OVEST: BLOCCATO (password "1234") -> porta Archivio-Corridoio Centrale Nord
-        Terminale terminaleMotoriOvest = new Terminale("Terminale di Sala Motori Ovest", "Un terminale di manutenzione impolverato, bloccato da password.", StatoTerminale.Bloccato, "1234");
+        // TERMINALE SALA MOTORI OVEST: BLOCCATO (password "2512": il compleanno di
+        // Claus, che cade a Natale) -> porta Archivio-Corridoio Centrale Nord
+        Terminale terminaleMotoriOvest = new Terminale("Terminale di Sala Motori Ovest", "Un terminale di manutenzione impolverato, bloccato da password.", StatoTerminale.Bloccato, "2512");
+        terminaleMotoriOvest.indizio = "la data di nascita di chi tutti chiamano Claus (formato ggmm)";
         terminaleMotoriOvest.logs.Add(@"24 dicembre - Ore 7:30 pm
 Mittente: Ignacio  -  Destinatari: Thobia, Carl, Pier
 Vi prego di perdonarmi: la mia era una scusa per organizzare una
@@ -925,7 +932,12 @@ Ps: Ignacio, domani vieni nel mio ufficio alle 7:00 am. Sii puntuale.");
 
         // TERMINALE SALA MEDICA: CRIPTATO -> cassa Medica
         Terminale terminaleMedica = new Terminale("Terminale di Sala Medica", "Un terminale medico protetto da crittografia.", StatoTerminale.Criptato, "");
-        terminaleMedica.logs.Add("PLACEHOLDER");
+        terminaleMedica.logs.Add(@"25 dicembre - Ore 0:19 am
+Log medico automatico
+Registrato accesso d'emergenza all'infermeria. Un membro dell'equipaggio
+presenta gravi lesioni da arma contundente. Prelevato kit di primo
+soccorso. Nessun medico disponibile a bordo per l'assistenza.
+Ultimo parametro vitale rilevato: instabile. Poi, il silenzio.");
         terminaleMedica.casseControllate.Add(cassaMedica);
         salaMedica.lista.Add(terminaleMedica);
 
