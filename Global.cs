@@ -977,9 +977,6 @@ Ultimo parametro vitale rilevato: instabile. Poi, il silenzio.");
             /* Riga 5 */ new Stanza[] { null, null, navetta, null, null }
         };
 
-        // Oggetto iniziale nell'inventario
-        player.inventario.Push(new Oggetto("Chiave Inglese", "Pesante e arrugginita.", 1.5f, true));
-
         // Partiamo dalla navetta (Riga 5, Colonna 2)
         player.coordinate = new int[] { 5, 2 };
         player.stanza = navetta;

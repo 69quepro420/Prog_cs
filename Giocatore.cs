@@ -14,7 +14,6 @@ class Giocatore
     public int[] coordinate;
     public Stanza? stanza;
     public Stack<Oggetto> inventario { get; set; }
-    public int vita = 100;
     public int contatorePassi = 0;
 
     /// <summary>
@@ -43,10 +42,8 @@ class Giocatore
     public void DisegnaHUD()
     {
         Console.Clear();
-        int blocchiVita = vita / 10;
-        string barraVita = new string('█', blocchiVita).PadRight(10, '-');
 
-        string infoUtente = $"{nome} | HP: [{barraVita}]".PadRight(43);
+        string infoUtente = nome.PadRight(43);
         string contatore = $"COUNTER: {contatorePassi:D4}";
 
         Console.WriteLine("+-----------------------------------------------------------+");
